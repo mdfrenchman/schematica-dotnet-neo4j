@@ -8,4 +8,8 @@
     <PackageReference Include="Neo4j.Driver" Version="1.7.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Neo4j.Schema.Attributes\Neo4j.Schema.Attributes.csproj" />
+  </ItemGroup>
+
 </Project>
