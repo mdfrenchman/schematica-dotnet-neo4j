@@ -9,6 +9,14 @@ namespace Neo4jSchemaManager
 {
     public static class NodeExtensions
     {
+        public static List<string> NodeKey(this Type type)
+        {
+            var nodeType = type;
+            PropertyInfo[] propertyInfo = nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var result = propertyInfo.Where(p => p.GetCustomAttributes(typeof(NodeKeyAttribute), true).Any()).Select(p => p.Name).ToList();
+            return result;
+        }
+
         public static string Label(this Type type)
         {
             // Check Label value in the Node Attribute.
