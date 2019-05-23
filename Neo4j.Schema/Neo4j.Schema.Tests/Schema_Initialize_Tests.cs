@@ -62,7 +62,8 @@ namespace Neo4j.Schema.Tests
         {
             using (var session = driver.Session(AccessMode.Write))
             {
-                session.WriteTransaction(tx => tx.Run($"DROP {carConstraint}"));
+                if (GetConstraints("NODE KEY","Car").Count() == 1)
+                    session.WriteTransaction(tx => tx.Run($"DROP {carConstraint}"));
             }
         }
 
