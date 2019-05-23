@@ -33,7 +33,7 @@ namespace Neo4j.Schema
 
         private static bool Exists(this Type type, ITransaction tx)
         {
-            return String.IsNullOrEmpty(type.Get(tx));
+            return !String.IsNullOrEmpty(type.Get(tx));
         }
 
         private static void Create(this Type type, ITransaction tx)
@@ -60,7 +60,7 @@ namespace Neo4j.Schema
 
         private static string Get(this Type type, ITransaction tx)
         {
-            var record = tx.Run("call db.constraints() yield description WITH * WHERE description contains $typeName AND description contains 'NODE KEY' RETURN description", new { typeName = type.Label() }).FirstOrDefault();
+            var record = tx.Run("call db.constraints() yield description WHERE description contains $typeName AND description contains 'NODE KEY' RETURN description", new { typeName = type.Label() }).FirstOrDefault();
             if (record is null)
                 return String.Empty;
             else if (!record[0].As<string>().Contains(") ASSERT ("))

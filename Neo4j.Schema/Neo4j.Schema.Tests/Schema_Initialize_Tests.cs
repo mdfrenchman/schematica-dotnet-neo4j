@@ -1,17 +1,31 @@
-﻿using System;
+﻿using Neo4j.Driver.V1;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
 namespace Neo4j.Schema.Tests
 {
-    public class Schema_Initialize_Tests
+    public class Schema_Initialize_Tests : IDisposable
     {
-
+        private IDriver driver = null;
+        private string carConstraint = "CONSTRAINT ON ( car:Car ) ASSERT (car.Make, car.Model, car.ModelYear) IS NODE KEY";
+        public Schema_Initialize_Tests()
+        {
+            driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "scratch"));
+            //GraphConnection.SetDriver(driver);
+        }
+        
         [Fact]
         public void Initialize_Will_SetNodeKey_For_Type()
         {
+            Assert.Empty(GetConstraints("NODE KEY", "Car"));
 
+            Schema.Initialize(typeof(Tests.DomainSample.Vehicle), driver);
+
+            Assert.Single(GetConstraints("NODE KEY", "Car"));
+            Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
         }
 
         [Fact]
@@ -42,6 +56,26 @@ namespace Neo4j.Schema.Tests
         public void Initialize_Will_SetIndexes_For_All_Types_In_Assembly()
         {
 
+        }
+
+        public void Dispose()
+        {
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                session.WriteTransaction(tx => tx.Run($"DROP {carConstraint}"));
+            }
+        }
+
+        private IStatementResult GetConstraints(string ofType, string forLabel)
+        {
+            using (var session = driver.Session(AccessMode.Read))
+            {
+                var result = session.ReadTransaction(tx => tx.Run(
+                    "CALL db.constraints() yield description WHERE description contains $typeLabel AND description contains $constraintType RETURN description",
+                    new { typeLabel = forLabel, constraintType = ofType }
+                    ));
+                return result;
+            }
         }
 
 
