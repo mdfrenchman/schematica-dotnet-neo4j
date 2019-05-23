@@ -19,7 +19,8 @@ namespace Neo4j.Schema.Tests
             driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "scratch"));
             //GraphConnection.SetDriver(driver);
         }
-        
+
+        #region Empty graph and schema starting point
         [Fact]
         public void Initialize_Will_SetNodeKey_For_Type()
         {
@@ -92,6 +93,7 @@ namespace Neo4j.Schema.Tests
         {
 
         }
+        #endregion
 
         public void Dispose()
         {

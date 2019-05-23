@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Neo4j.Schema\Neo4j.Schema.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Indexes\" />
+  </ItemGroup>
+
 </Project>
