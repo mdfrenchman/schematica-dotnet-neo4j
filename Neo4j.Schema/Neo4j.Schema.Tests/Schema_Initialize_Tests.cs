@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Xunit;
 
@@ -11,6 +12,8 @@ namespace Neo4j.Schema.Tests
     {
         private IDriver driver = null;
         private string carConstraint = "CONSTRAINT ON ( car:Car ) ASSERT (car.Make, car.Model, car.ModelYear) IS NODE KEY";
+        private string personConstraint = "CONSTRAINT ON ( person:Person ) ASSERT (person.Name) IS NODE KEY";
+
         public Schema_Initialize_Tests()
         {
             driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "scratch"));
@@ -31,13 +34,45 @@ namespace Neo4j.Schema.Tests
         [Fact]
         public void Initialize_Will_SetNodeKeys_For_CollectionOf_Types()
         {
+            Assert.Empty(GetConstraints("NODE KEY", "Car"));
+            Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
+            Assert.Empty(GetConstraints("NODE KEY", "Person"));
 
+            var domainTypeList = new List<Type>()
+            {
+                typeof(DomainSample.Keyless),
+                typeof(DomainSample.Person),
+                typeof(DomainSample.Vehicle)
+            };
+
+            Schema.Initialize(domainTypeList, driver);
+
+            Assert.Single(GetConstraints("NODE KEY", "Car"));
+            Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
+
+            Assert.Single(GetConstraints("NODE KEY", "Person"));
+            Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
+
+            Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
         }
 
         [Fact]
         public void Initialize_Will_SetNodeKeys_For_All_Types_In_Assembly()
         {
+            Assert.Empty(GetConstraints("NODE KEY", "Car"));
+            Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
+            Assert.Empty(GetConstraints("NODE KEY", "Person"));
 
+           
+            Schema.Initialize(assembly:Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
+
+            Assert.Single(GetConstraints("NODE KEY", "Car"));
+            Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
+
+            Assert.Single(GetConstraints("NODE KEY", "Person"));
+            Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
+
+            Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
         }
 
         [Fact]
@@ -64,6 +99,8 @@ namespace Neo4j.Schema.Tests
             {
                 if (GetConstraints("NODE KEY","Car").Count() == 1)
                     session.WriteTransaction(tx => tx.Run($"DROP {carConstraint}"));
+                if (GetConstraints("NODE KEY", "Person").Count() == 1)
+                    session.WriteTransaction(tx => tx.Run($"DROP {personConstraint}"));
             }
         }
 
