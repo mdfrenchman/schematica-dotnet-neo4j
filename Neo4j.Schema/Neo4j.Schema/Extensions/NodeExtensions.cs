@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Neo4jSchemaManager
+namespace Neo4j.Schema
 {
     public static class NodeExtensions
     {

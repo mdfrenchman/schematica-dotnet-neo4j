@@ -1,7 +1,7 @@
 ﻿using Neo4j.Schema.Attributes;
 using System;
 
-namespace Neo4jSchemaManager.DomainTestSample
+namespace Neo4j.Schema.Tests.DomainSample
 {
     public class Person
     {

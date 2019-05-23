@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Neo4jSchemaManager.DomainTestSample\Neo4jSchemaManager.DomainTestSample.csproj" />
-    <ProjectReference Include="..\Neo4jSchemaManager\Neo4jSchemaManager.csproj" />
+    <ProjectReference Include="..\Neo4j.Schema.Tests.DomainSample\Neo4j.Schema.Tests.DomainSample.csproj" />
+    <ProjectReference Include="..\Neo4j.Schema\Neo4j.Schema.csproj" />
   </ItemGroup>
 
 </Project>

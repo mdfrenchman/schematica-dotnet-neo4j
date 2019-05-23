@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Neo4jSchemaManager
+namespace Neo4j.Schema
 {
     public static class Schema
     {

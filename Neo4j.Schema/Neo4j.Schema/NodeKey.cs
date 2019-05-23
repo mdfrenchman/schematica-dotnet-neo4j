@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Neo4jSchemaManager
+namespace Neo4j.Schema
 {
     internal static class NodeKey
     {

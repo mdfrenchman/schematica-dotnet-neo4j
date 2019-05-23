@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Neo4jSchemaManager.DomainTestSample
+namespace Neo4j.Schema.Tests.DomainSample
 {
     [Node]
     public class Keyless
