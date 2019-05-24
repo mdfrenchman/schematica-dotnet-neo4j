@@ -8,10 +8,54 @@ namespace Schematica.Neo4j.Constraints
 {
     public static class NodeKey
     {
-        public static void Create(Type type, IDriver driver = null) { }
-        public static void Create(Type type, ISession session) { }
-        public static void Drop(Type type, IDriver driver = null) { }
-        public static void Drop(Type type, ISession session) { }
+
+        /// <summary>
+        /// Crete type.NodeKey if one doesn't already exist in the graph.
+        /// </summary>
+        /// <remarks>
+        /// Use Set unless the graph schema is definitely empty.
+        /// </remarks>
+        /// <param name="type"></param>
+        /// <param name="driver"></param>
+        public static void Create(Type type, IDriver driver = null) {
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                Create(type, session);
+            }
+        }
+
+        /// <summary>
+        /// Crete type.NodeKey if one doesn't already exist in the graph.
+        /// </summary>
+        /// <remarks>
+        /// Use Set unless the graph schema is definitely empty.
+        /// </remarks>
+        /// <param name="type"></param>
+        /// <param name="session"></param>
+        public static void Create(Type type, ISession session) {
+            session.WriteTransaction(tx => Create(type, tx));
+        }
+
+        /// <summary>
+        /// Drop the NodeKey in the graph if one exists. Doesn't require that it match the type.NodeKey()
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="driver"></param>
+        public static void Drop(Type type, IDriver driver = null) {
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                Drop(type, session);
+            }
+        }
+
+        /// <summary>
+        /// Drop the NodeKey in the graph if one exists. Doesn't require that it match the type.NodeKey()
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="session"></param>
+        public static void Drop(Type type, ISession session) {
+            session.WriteTransaction(tx => Drop(type, tx));
+        }
 
         /// <summary>
         /// A Node Key exists for the type. Does not necessarily match domain type node key.
@@ -22,7 +66,13 @@ namespace Schematica.Neo4j.Constraints
         /// <param name="type"></param>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public static bool Exists(Type type, IDriver driver = null) { return false; }
+        public static bool Exists(Type type, IDriver driver = null) {
+            using (var session = driver.Session(AccessMode.Read))
+            {
+                return Exists(type, session);
+            }
+        }
+        
         /// <summary>
         /// A Node Key exists for the type. Does not necessarily match domain type node key.
         /// </summary>
@@ -32,7 +82,9 @@ namespace Schematica.Neo4j.Constraints
         /// <param name="type"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        public static bool Exists(Type type, ISession session) { return false; }
+        public static bool Exists(Type type, ISession session) {
+            return session.ReadTransaction(tx => Exists(type, tx));
+        }
 
         /// <summary>
         /// Determins if the domain type Node Key is the same as the Node Key in the graph.
@@ -40,16 +92,29 @@ namespace Schematica.Neo4j.Constraints
         /// <param name="type"></param>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public static bool MatchesExisting(Type type, IDriver driver = null) { return false; }
+        public static bool MatchesExisting(Type type, IDriver driver = null) {
+            using (var session = driver.Session(AccessMode.Read))
+            {
+                return MatchesExisting(type, session);
+            }
+        }
+        
         /// <summary>
         /// Determins if the domain type Node Key is the same as the Node Key in the graph.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        public static bool MatchesExisting(Type type, ISession session) { return false; }
+        public static bool MatchesExisting(Type type, ISession session) {
+            return session.ReadTransaction(tx => MatchesExisting(type, tx));
+        }
 
-        internal static void SetNodeKeyConstraint(this Type type, ITransaction tx)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="tx"></param>
+        internal static void SetNodeKey(this Type type, ITransaction tx)
         {
             if (!type.MatchesExisting(tx))
             {
@@ -58,7 +123,12 @@ namespace Schematica.Neo4j.Constraints
             }
         }
 
-        internal static void RemoveNodeKeyConstraint(this Type type, ITransaction tx)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="tx"></param>
+        internal static void RemoveNodeKey(this Type type, ITransaction tx)
         {
 
         }
@@ -121,5 +191,12 @@ namespace Schematica.Neo4j.Constraints
             else
                 return $"CONSTRAINT ON ( {nodeVariable}:{label} ) ASSERT ({keyString}) IS NODE KEY";
         }
+
+        // TODO: We probably should test the individual private methods in NodeKey.cs individually.
+        // Schema.Constraints.NodeKey.Create(type, tx|session|driver, forceReplace = false) => If a node key does not already exist, create it.
+        // Schema.Constraints.NodeKey.Drop(type, tx|session|driver) => if a node key exists, drop it.
+        // Schema.Constraints.NodeKey.Exists(type, tx|session|driver) => bool if any node key exists for the provided type.Label().
+        // Schema.Constraints.NodeKey.MatchesExisting(type, tx|session|driver) => bool if the type NodeKey matches the nodekey in graph.
+
     }
 }

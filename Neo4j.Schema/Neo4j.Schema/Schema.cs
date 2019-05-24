@@ -23,7 +23,7 @@ namespace Schematica.Neo4j
                 session.WriteTransaction(tx => {
                     foreach (Type type in domainTypes)
                     {
-                        type.SetNodeKeyConstraint(tx);
+                        type.SetNodeKey(tx);
                     }
                 });
             }
@@ -35,7 +35,7 @@ namespace Schematica.Neo4j
                 driver = GraphConnection.Driver;
             using (var session = driver.Session(AccessMode.Write))
             {
-                session.WriteTransaction(tx => type.SetNodeKeyConstraint(tx));
+                session.WriteTransaction(tx => type.SetNodeKey(tx));
             }
         }
     }
