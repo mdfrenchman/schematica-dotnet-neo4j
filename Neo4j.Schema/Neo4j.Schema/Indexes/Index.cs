@@ -8,21 +8,19 @@ namespace Neo4j.Schema.Indexes
     public class Index
     {
 
-        // new Schema.Indexes.Index() => Schema.Indexes.Index { Label, Properties };
+        // new Schema.Indexes.Index() => Schema.Indexes.Index { _label, _properties };
         // (Schema.Indexes.Index instance).Create(tx|session|driver);
         // (Schema.Indexes.Index instance).Drop(tx|session|driver);
         // (Schema.Indexes.Index instance).Exists(tx|session|driver);
 
-
-        private string Label { get; set; }
-
-        private string[] Properties { get; set; }
+        private string _label;
+        private string[] _properties { get; set; }
 
         public Index(){ }
         public Index(string label, string[] properties)
         {
-            Label = label;
-            Properties = properties;
+            _label = label;
+            _properties = properties;
         }
 
         public void Create(IDriver driver = null) { }

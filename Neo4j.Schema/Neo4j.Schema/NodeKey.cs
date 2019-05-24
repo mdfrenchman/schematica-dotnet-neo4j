@@ -6,8 +6,49 @@ using System.Text;
 
 namespace Neo4j.Schema
 {
-    internal static class NodeKey
+    public static class NodeKey
     {
+        public static void Create(Type type, IDriver driver = null) { }
+        public static void Create(Type type, ISession session) { }
+        public static void Drop(Type type, IDriver driver = null) { }
+        public static void Drop(Type type, ISession session) { }
+
+        /// <summary>
+        /// A Node Key exists for the type. Does not necessarily match domain type node key.
+        /// </summary>
+        /// <remarks>
+        /// Use MatchesExisting if you want to check for an exact match of the domain type to the graph.
+        /// </remarks>
+        /// <param name="type"></param>
+        /// <param name="driver"></param>
+        /// <returns></returns>
+        public static bool Exists(Type type, IDriver driver = null) { return false; }
+        /// <summary>
+        /// A Node Key exists for the type. Does not necessarily match domain type node key.
+        /// </summary>
+        /// <remarks>
+        /// Use MatchesExisting if you want to check for an exact match of the domain type to the graph.
+        /// </remarks>
+        /// <param name="type"></param>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public static bool Exists(Type type, ISession session) { return false; }
+
+        /// <summary>
+        /// Determins if the domain type Node Key is the same as the Node Key in the graph.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="driver"></param>
+        /// <returns></returns>
+        public static bool MatchesExisting(Type type, IDriver driver = null) { return false; }
+        /// <summary>
+        /// Determins if the domain type Node Key is the same as the Node Key in the graph.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public static bool MatchesExisting(Type type, ISession session) { return false; }
+
         internal static void SetNodeKeyConstraint(this Type type, ITransaction tx)
         {
             if (!type.MatchesExisting(tx))
