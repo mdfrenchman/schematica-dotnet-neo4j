@@ -1,6 +1,6 @@
 ﻿
 using Xunit;
-using Neo4j.Schema;
+using Schematica.Neo4j;
 using Neo4j.Schema.Tests.DomainSample;
 using System;
 using System.Collections.Generic;

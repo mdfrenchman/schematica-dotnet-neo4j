@@ -1,9 +1,10 @@
 ﻿using Neo4j.Driver.V1;
+using Schematica.Neo4j.Constraints;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Neo4j.Schema
+namespace Schematica.Neo4j
 {
     public static class Schema
     {

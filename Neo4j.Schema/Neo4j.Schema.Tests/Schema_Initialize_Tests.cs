@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Xunit;
+using Schematica.Neo4j;
 
 namespace Neo4j.Schema.Tests
 {
@@ -26,7 +27,7 @@ namespace Neo4j.Schema.Tests
         {
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
 
-            Schema.Initialize(typeof(Tests.DomainSample.Vehicle), driver);
+            Schematica.Neo4j.Schema.Initialize(typeof(Tests.DomainSample.Vehicle), driver);
 
             Assert.Single(GetConstraints("NODE KEY", "Car"));
             Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
@@ -46,7 +47,7 @@ namespace Neo4j.Schema.Tests
                 typeof(DomainSample.Vehicle)
             };
 
-            Schema.Initialize(domainTypeList, driver);
+            Schematica.Neo4j.Schema.Initialize(domainTypeList, driver);
 
             Assert.Single(GetConstraints("NODE KEY", "Car"));
             Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
@@ -65,7 +66,7 @@ namespace Neo4j.Schema.Tests
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
 
            
-            Schema.Initialize(assembly:Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
+            Schematica.Neo4j.Schema.Initialize(assembly:Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
 
             Assert.Single(GetConstraints("NODE KEY", "Car"));
             Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
