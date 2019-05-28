@@ -75,6 +75,10 @@ namespace Schematica.Neo4j.Constraints
         /// <param name="driver"></param>
         /// <returns></returns>
         public static bool Exists(Type type, IDriver driver = null) {
+            if (driver is null)
+                driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "NodeKey.Exists() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
             using (var session = driver.Session(AccessMode.Read))
             {
                 return Exists(type, session);
