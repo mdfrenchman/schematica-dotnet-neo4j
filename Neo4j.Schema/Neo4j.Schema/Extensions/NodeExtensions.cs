@@ -21,21 +21,11 @@ namespace Schematica.Neo4j
         {
             // Check Label value in the Node Attribute.
             NodeAttribute attr = (NodeAttribute)type.GetCustomAttribute(typeof(NodeAttribute), false);
-            if (!(attr is null) && !String.IsNullOrEmpty(attr.Label))
-                return attr.Label;
+            return (!(attr is null) && !String.IsNullOrEmpty(attr.Label)) ?
+                attr.Label :
             // Get the ClassName if there is no Node Attribute with a Label defined.
-            string friendlyName = type.Name;
-            if (type.IsGenericType)
-            {
-                int iBacktick = friendlyName.IndexOf('`');
-                if (iBacktick > 0)
-                {
-                    friendlyName = friendlyName.Remove(iBacktick);
-                }
-                friendlyName += $"<{string.Join(",", type.GetGenericArguments().Select(p => type.Label()))}>";
-            }
+                type.Name;
 
-            return friendlyName;
         }
     }
 }

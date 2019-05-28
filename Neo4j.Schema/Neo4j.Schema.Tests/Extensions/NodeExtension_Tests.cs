@@ -33,6 +33,26 @@ namespace Neo4j.Schema.Tests.Extensions
             var testType = typeof(Keyless);
             Xunit.Assert.Equal("Keyless", testType.Label());
         }
+
+        #region Setup for Dynamic Type test
+        internal interface ITestNode
+        {
+        }
+        public class Generic : ITestNode
+        {
+            internal static string TestLabelForGeneric<T>(){
+                Type type = typeof(T);
+                return type.Label();
+            }
+        }
+        #endregion
+        [Fact]
+        public void NodeExtension_Label_Returns_ClassName_From_DynamicType()
+        {
+            var anonymousTypeLabel = Generic.TestLabelForGeneric<Keyless>();
+            Xunit.Assert.Equal("Keyless",anonymousTypeLabel);
+        }
+
         #endregion
 
         #region NodeKey
