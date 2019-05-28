@@ -77,19 +77,19 @@ namespace Neo4j.Schema.Tests
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implimented Yet")]
         public void Initialize_Will_SetIndexes_For_Type()
         {
-
+            
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implimented Yet")]
         public void Initialize_Will_SetIndexes_For_CollectionOf_Types()
         {
 
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implimented Yet")]
         public void Initialize_Will_SetIndexes_For_All_Types_In_Assembly()
         {
 
