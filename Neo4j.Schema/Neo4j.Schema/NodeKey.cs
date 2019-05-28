@@ -46,6 +46,10 @@ namespace Schematica.Neo4j.Constraints
         /// <param name="type"></param>
         /// <param name="driver"></param>
         public static void Drop(Type type, IDriver driver = null) {
+            if (driver is null)
+                driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "NodeKey.Drop() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
             using (var session = driver.Session(AccessMode.Write))
             {
                 Drop(type, session);
