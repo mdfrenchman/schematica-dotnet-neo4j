@@ -12,7 +12,7 @@ namespace Neo4j.Schema.Tests.NodeKey
     public class NodeKey_MatchesExisting_Tests :IDisposable
     {
         private IDriver driver = null;
-        private string teConstraint = "CONSTRAINT ON ( te:TE ) ASSERT (te.Name, te.Identity) IS NODE KEY";
+        private string meConstraint = "CONSTRAINT ON ( me:ME ) ASSERT (me.Name) IS NODE KEY";
 
         public NodeKey_MatchesExisting_Tests()
         {
@@ -21,18 +21,80 @@ namespace Neo4j.Schema.Tests.NodeKey
         }
 
         [Fact]
-        public void NodeKey_MatchesExisting_Returns_True_When_NodeKey_MatchesExisting_For_Type_With_Driver()
+        public void NodeKey_MatchesExisting_Returns_TrueFalse_When_NodeKey_MatchesExisting_For_Type_With_Driver()
         {
+            // Before
+            Assert.Empty(GetConstraints("NODE KEY", "ME"));
+
+            // Test False
+            var actualFalse = Schematica.Neo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.MatchesExistingNode), driver);
+            Assert.False(actualFalse);
+
+            // Setup
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
+            }
+
+            //Confirm Setup
+            Assert.Single(GetConstraints("NODE KEY", "ME"));
+            Assert.Equal(meConstraint, GetConstraints("NODE KEY", "ME").First()[0]);
+
+            // Test True
+            var actualTrue = Schematica.Neo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.MatchesExistingNode), driver);
+            Assert.True(actualTrue);
         }
 
         [Fact]
-        public void NodeKey_MatchesExisting_Returns_True_When_NodeKey_MatchesExisting_For_Type_WithOut_Driver()
+        public void NodeKey_MatchesExisting_Returns_TrueFalse_When_NodeKey_MatchesExisting_For_Type_WithOut_Driver()
         {
+            // Before
+            Assert.Empty(GetConstraints("NODE KEY", "ME"));
+            GraphConnection.SetDriver(driver);
+            // Test False
+            var actualFalse = Schematica.Neo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.MatchesExistingNode));
+            Assert.False(actualFalse);
+
+            // Setup
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
+            }
+            //Confirm Setup
+            Assert.Single(GetConstraints("NODE KEY", "ME"));
+            Assert.Equal(meConstraint, GetConstraints("NODE KEY", "ME").First()[0]);
+
+            // Test True
+            var actualTrue = Schematica.Neo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.MatchesExistingNode));
+            Assert.True(actualTrue);
         }
 
         [Fact]
-        public void NodeKey_MatchesExisting_Returns_True_When_NodeKey_MatchesExisting_For_Type_With_Session()
+        public void NodeKey_MatchesExisting_Returns_TrueFalse_When_NodeKey_MatchesExisting_For_Type_With_Session()
         {
+            // Before
+            Assert.Empty(GetConstraints("NODE KEY", "ME"));
+            using (var session = driver.Session(AccessMode.Read))
+            {
+                // Test False
+                var actualFalse = Schematica.Neo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.MatchesExistingNode), driver);
+                Assert.False(actualFalse);
+            }
+            // Setup
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
+            }
+            //Confirm Setup
+            Assert.Single(GetConstraints("NODE KEY", "ME"));
+            Assert.Equal(meConstraint, GetConstraints("NODE KEY", "ME").First()[0]);
+
+            using (var session = driver.Session(AccessMode.Read))
+            {
+                // Test True
+                var actualTrue = Schematica.Neo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.MatchesExistingNode), driver);
+                Assert.True(actualTrue);
+            }
         }
 
         public void Dispose()
@@ -41,8 +103,8 @@ namespace Neo4j.Schema.Tests.NodeKey
             {
                 session.WriteTransaction(tx =>
                 {
-                    if (GetConstraints("NODE KEY", "TE", tx).Count() == 1)
-                        tx.Run($"DROP {teConstraint}");
+                    if (GetConstraints("NODE KEY", "ME", tx).Count() == 1)
+                        tx.Run($"DROP {meConstraint}");
                 });
             }
         }

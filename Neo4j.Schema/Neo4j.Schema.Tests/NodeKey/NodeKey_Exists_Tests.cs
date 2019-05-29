@@ -21,7 +21,7 @@ namespace Neo4j.Schema.Tests.NodeKey
         }
 
         [Fact]
-        public void NodeKey_Exists_Will_ExistsNodeKey_For_Type_With_Driver()
+        public void NodeKey_Exists_Will_Return_TrueFalse_When_NodeKey_Exists_For_Type_With_Driver()
         {
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "TE"));
@@ -46,7 +46,7 @@ namespace Neo4j.Schema.Tests.NodeKey
         }
 
         [Fact]
-        public void NodeKey_Exists_Will_ExistsNodeKey_For_Type_WithOut_Driver()
+        public void NodeKey_Exists_Will_Return_TrueFalse_When_NodeKey_Exists_For_Type_WithOut_Driver()
         {
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "TE"));
@@ -70,7 +70,7 @@ namespace Neo4j.Schema.Tests.NodeKey
         }
 
         [Fact]
-        public void NodeKey_Exists_Will_ExistsNodeKey_For_Type_With_Session()
+        public void NodeKey_Exists_Will_Return_TrueFalse_When_NodeKey_Exists_For_Type_With_Session()
         {
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "TE"));
