@@ -191,6 +191,7 @@ namespace Schematica.Neo4j.Constraints
             if (record is null)
                 return String.Empty;
             else if (!record[0].As<string>().Contains(") ASSERT ("))
+                // Older versions of Neo4j a single parameter key would not have the () around it on return. But they're needed for CREATE/DROP.
                 return record[0].As<string>().Replace(") ASSERT ", ") ASSERT ( ").Replace(" IS NODE KEY", " ) IS NODE KEY");
             else
                 return record[0].As<string>();
