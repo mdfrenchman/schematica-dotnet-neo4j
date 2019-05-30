@@ -55,6 +55,17 @@ namespace Neo4j.Schema.Tests.NodeKey
         }
 
         [Fact]
+        public void NodeKey_Create_Will_ThrowException_For_Type_With_No_Driver()
+        {
+            
+            // Set Driver for Schematica.Neo4j to null
+            Schematica.Neo4j.GraphConnection.SetDriver(null);
+            // Execute
+            Assert.Throws<Neo4jException>(() => Schematica.Neo4j.Constraints.NodeKey.Create(typeof(Tests.DomainSample.Vehicle), driver: null));
+
+        }
+
+        [Fact]
         public void NodeKey_Create_Will_CreateNodeKey_For_Type_With_Session()
         {
             // Before

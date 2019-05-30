@@ -148,6 +148,17 @@ namespace Neo4j.Schema.Tests.NodeKey
             }
         }
 
+        [Fact]
+        public void NodeKey_MatchesExisting_Will_ThrowException_For_Type_With_No_Driver()
+        {
+
+            // Set Driver for Schematica.Neo4j to null
+            Schematica.Neo4j.GraphConnection.SetDriver(null);
+            // Execute
+            Assert.Throws<Neo4jException>(() => Schematica.Neo4j.Constraints.NodeKey.MatchesExisting(typeof(Tests.DomainSample.Vehicle), driver: null));
+
+        }
+
         public void Dispose()
         {
             using (var session = driver.Session(AccessMode.Write))
