@@ -89,6 +89,46 @@ namespace Neo4j.Schema.Tests
         #endregion
 
         #region With Existing NodeKey
+        [Fact]
+        public void Clear_With_Existing_NodeKey_Will_RemoveNodeKey_For_Type()
+        {
+            // Setup Test
+            Schematica.Neo4j.Constraints.NodeKey.Create(typeof(Tests.DomainSample.Vehicle), driver);
+            // Verify Setup
+            Assert.Single(GetConstraints("NODE KEY", "Car"));
+            Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
+            // Execute
+            Schematica.Neo4j.Schema.Clear(typeof(Tests.DomainSample.Vehicle), driver);
+            // Confirm Execution
+            Assert.Empty(GetConstraints("NODE KEY", "Car"));
+        }
+
+        [Fact]
+        public void Clear_With_Existing_NodeKey_Will_RemoveNodeKey_For_CollectionOf_Types()
+        {
+
+            var domainTypeList = new List<Type>()
+            {
+                typeof(DomainSample.Keyless),
+                typeof(DomainSample.Person),
+                typeof(DomainSample.Vehicle)
+            };
+            
+            // Setup Test
+            Schematica.Neo4j.Schema.Initialize(domainTypeList, driver);
+            // Verify Setup
+            Assert.Single(GetConstraints("NODE KEY", "Car"));
+            Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
+            Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
+
+            // Execute
+            Schematica.Neo4j.Schema.Clear(typeof(Tests.DomainSample.Vehicle), driver);
+            // Confirm Execution
+            Assert.Empty(GetConstraints("NODE KEY", "Car"));
+            Assert.Empty(GetConstraints("NODE KEY", "Person"));
+            Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
+        }
+ 
 
         #endregion
 
