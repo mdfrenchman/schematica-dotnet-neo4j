@@ -21,9 +21,28 @@ namespace Neo4j.Schema.Tests
             //GraphConnection.SetDriver(driver);
         }
 
+        #region Missing Driver Throws an Exception
+        [Fact]
+        public void Initialize_Will_Throw_Exception_For_Type_Collection_With_No_Driver()
+        {
+            // Set Driver for Schematica.Neo4j to null
+            Schematica.Neo4j.GraphConnection.SetDriver(null);
+            var listOfTypes = new List<Type>() { typeof(Tests.DomainSample.Person), typeof(Tests.DomainSample.Vehicle)};
+            // Execute
+            Assert.Throws<Neo4jException>(() => Schematica.Neo4j.Schema.Initialize(domainTypes:listOfTypes, driver: null));
+        }
+        [Fact]
+        public void Initialize_Will_Throw_Exception_For_Type_With_No_Driver()
+        {
+            // Set Driver for Schematica.Neo4j to null
+            Schematica.Neo4j.GraphConnection.SetDriver(null);
+            // Execute
+            Assert.Throws<Neo4jException>(() => Schematica.Neo4j.Schema.Initialize(typeof(Tests.DomainSample.Vehicle), driver: null));
+        }
+        #endregion
         #region Empty graph and schema starting point
         [Fact]
-        public void Initialize_Will_SetNodeKey_For_Type()
+        public void Initialize_With_EmptySchema_Will_SetNodeKey_For_Type()
         {
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
 
@@ -34,7 +53,7 @@ namespace Neo4j.Schema.Tests
         }
 
         [Fact]
-        public void Initialize_Will_SetNodeKeys_For_CollectionOf_Types()
+        public void Initialize_With_EmptySchema_Will_SetNodeKeys_For_CollectionOf_Types()
         {
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
@@ -59,7 +78,7 @@ namespace Neo4j.Schema.Tests
         }
 
         [Fact]
-        public void Initialize_Will_SetNodeKeys_For_All_Types_In_Assembly()
+        public void Initialize_With_EmptySchema_Will_SetNodeKeys_For_All_Types_In_Assembly()
         {
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));

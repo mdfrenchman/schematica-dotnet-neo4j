@@ -18,6 +18,8 @@ namespace Schematica.Neo4j
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Initialize() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
             using (var session = driver.Session(AccessMode.Write))
             {
                 session.WriteTransaction(tx => {
@@ -33,6 +35,8 @@ namespace Schematica.Neo4j
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Initialize() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
             using (var session = driver.Session(AccessMode.Write))
             {
                 session.WriteTransaction(tx => type.SetNodeKey(tx));
