@@ -146,7 +146,7 @@ namespace Schematica.Neo4j.Constraints
         /// <param name="tx"></param>
         internal static void RemoveNodeKey(this Type type, ITransaction tx)
         {
-
+            Drop(type, tx);
         }
 
         private static bool MatchesExisting(this Type type, ITransaction tx)
