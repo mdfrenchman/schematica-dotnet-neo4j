@@ -88,6 +88,10 @@ namespace Neo4j.Schema.Tests
         }
         #endregion
 
+        #region With Existing NodeKey
+
+        #endregion
+
         public void Dispose()
         {
             using (var session = driver.Session(AccessMode.Write))

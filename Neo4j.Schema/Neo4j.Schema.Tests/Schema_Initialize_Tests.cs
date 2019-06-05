@@ -40,6 +40,7 @@ namespace Neo4j.Schema.Tests
             Assert.Throws<Neo4jException>(() => Schematica.Neo4j.Schema.Initialize(typeof(Tests.DomainSample.Vehicle), driver: null));
         }
         #endregion
+        
         #region Empty graph and schema starting point
         [Fact]
         public void Initialize_With_EmptySchema_Will_SetNodeKey_For_Type()
@@ -113,6 +114,10 @@ namespace Neo4j.Schema.Tests
         {
 
         }
+        #endregion
+
+        #region With Existing NodeKey
+        
         #endregion
 
         public void Dispose()
