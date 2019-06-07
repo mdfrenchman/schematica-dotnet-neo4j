@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>SchematicNeo4j</PackageId>
+    <Version>0.1.0-beta</Version>
+    <Authors>Mike French</Authors>
+    <Company>CALIBRE Systems, Inc.</Company>
+    <Owner></Owner>
+    <Product>SchematicNeo4j</Product>
+    <Description>A code-first, domain driven, schema management tool for Neo4j and .NET. 
+Helpful in quickly and consistently managing graph schema for your domain model.</Description>
+    <PackageTags>SchematicNeo4j neo4j code-first schema nosql dotnet</PackageTags>
+    <PackageLicenseExpression>GNU</PackageLicenseExpression>
+    <PackageLicenseFile></PackageLicenseFile>
+    <PackageReleaseNotes>
+      Initial Release with methods that can accept an assembly, a collection of types, or a single type.
+      Methods:
+      Schema.Initialize
+      NodeKey.Create/Drop/Exists/MatchesExisting
+    </PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/mdfrenchman/schematica-dotnet-neo4j</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mdfrenchman/schematica-dotnet-neo4j</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <Copyright>Copyright 2019  Michael French</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo4j.Driver" Version="1.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SchematicNeo4j.Attributes\SchematicNeo4j.Attributes.csproj" />
+  </ItemGroup>
+
+</Project>
