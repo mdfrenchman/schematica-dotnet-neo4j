@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j.Attributes", "Neo4j.Schema.Attributes\SchematicNeo4j.Attributes.csproj", "{AD763B8E-29B2-4406-B667-CF67D1ADABC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j.Attributes", "SchematicNeo4j.Attributes\SchematicNeo4j.Attributes.csproj", "{AD763B8E-29B2-4406-B667-CF67D1ADABC5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j", "Neo4j.Schema\SchematicNeo4j.csproj", "{6293A88E-BAB0-4B96-A599-BA1003E8934D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j", "SchematicNeo4j\SchematicNeo4j.csproj", "{6293A88E-BAB0-4B96-A599-BA1003E8934D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j.Tests.DomainSample", "Neo4j.Schema.Tests.DomainSample\SchematicNeo4j.Tests.DomainSample.csproj", "{62158FAC-E870-4098-867D-6D3016D7B8E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j.Tests.DomainSample", "SchematicNeo4j.Tests.DomainSample\SchematicNeo4j.Tests.DomainSample.csproj", "{62158FAC-E870-4098-867D-6D3016D7B8E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j.Tests", "Neo4j.Schema.Tests\SchematicNeo4j.Tests.csproj", "{3011197B-F98B-4538-A009-3271300DB460}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchematicNeo4j.Tests", "SchematicNeo4j.Tests\SchematicNeo4j.Tests.csproj", "{3011197B-F98B-4538-A009-3271300DB460}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
