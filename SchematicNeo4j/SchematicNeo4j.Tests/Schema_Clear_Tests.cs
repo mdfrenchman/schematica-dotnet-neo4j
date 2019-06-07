@@ -28,7 +28,7 @@ namespace SchematicNeo4j.Tests
             SchematicNeo4j.GraphConnection.SetDriver(null);
             var listOfTypes = new List<Type>() { typeof(Tests.DomainSample.Person), typeof(Tests.DomainSample.Vehicle) };
             // Execute
-            Assert.Throws<Neo4jException>(() => Schematica.SchematicNeo4j.Clear(domainTypes: listOfTypes, driver: null));
+            Assert.Throws<Neo4jException>(() => SchematicNeo4j.Schema.Clear(domainTypes: listOfTypes, driver: null));
         }
         [Fact]
         public void Clear_Will_Throw_Exception_For_Type_With_No_Driver()
@@ -36,7 +36,7 @@ namespace SchematicNeo4j.Tests
             // Set Driver for SchematicNeo4j to null
             SchematicNeo4j.GraphConnection.SetDriver(null);
             // Execute
-            Assert.Throws<Neo4jException>(() => Schematica.SchematicNeo4j.Clear(typeof(Tests.DomainSample.Vehicle), driver: null));
+            Assert.Throws<Neo4jException>(() => SchematicNeo4j.Schema.Clear(typeof(Tests.DomainSample.Vehicle), driver: null));
         }
         #endregion
         
@@ -46,7 +46,7 @@ namespace SchematicNeo4j.Tests
         {
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
 
-            Schematica.SchematicNeo4j.Clear(typeof(Tests.DomainSample.Vehicle), driver);
+            SchematicNeo4j.Schema.Clear(typeof(Tests.DomainSample.Vehicle), driver);
 
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
         }
@@ -65,7 +65,7 @@ namespace SchematicNeo4j.Tests
                 typeof(DomainSample.Vehicle)
             };
 
-            Schematica.SchematicNeo4j.Clear(domainTypeList, driver);
+            SchematicNeo4j.Schema.Clear(domainTypeList, driver);
 
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
@@ -80,7 +80,7 @@ namespace SchematicNeo4j.Tests
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
 
-            Schematica.SchematicNeo4j.Clear(assembly: Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
+            SchematicNeo4j.Schema.Clear(assembly: Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
 
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
@@ -98,7 +98,7 @@ namespace SchematicNeo4j.Tests
             Assert.Single(GetConstraints("NODE KEY", "Car"));
             Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
             // Execute
-            Schematica.SchematicNeo4j.Clear(typeof(Tests.DomainSample.Vehicle), driver);
+            SchematicNeo4j.Schema.Clear(typeof(Tests.DomainSample.Vehicle), driver);
             // Confirm Execution
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
         }
@@ -113,16 +113,16 @@ namespace SchematicNeo4j.Tests
                 typeof(DomainSample.Person),
                 typeof(DomainSample.Vehicle)
             };
-            
+
             // Setup Test
-            Schematica.SchematicNeo4j.Initialize(domainTypeList, driver);
+            SchematicNeo4j.Schema.Initialize(domainTypeList, driver);
             // Verify Setup
             Assert.Single(GetConstraints("NODE KEY", "Car"));
             Assert.Equal(carConstraint, GetConstraints("NODE KEY", "Car").First()[0]);
             Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
 
             // Execute
-            Schematica.SchematicNeo4j.Clear(typeof(Tests.DomainSample.Vehicle), driver);
+            SchematicNeo4j.Schema.Clear(typeof(Tests.DomainSample.Vehicle), driver);
             // Confirm Execution
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
