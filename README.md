@@ -1,5 +1,5 @@
-# Neo4j Schema Manager
-Tools to ensure a consistent Neo4j graph schema for a domain layer that is defined in a .NET library.
+# SchematicNeo4j
+A code-first approach to manage a consistent Neo4j graph schema for a domain layer that is defined in a .NET library.
 
 ## For Developers
 
@@ -27,7 +27,7 @@ public class Car {
 }
 ```
 
-## Neo4j.Schema.Extensions
+## SchematicNeo4j.Extensions
 There are a few provided extensions that we can take advantage of when using the CustomAttributes.
 Assume the following Vehicle definition:
 ```csharp
