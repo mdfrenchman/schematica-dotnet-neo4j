@@ -200,7 +200,9 @@ namespace SchematicNeo4j.Constraints
         private static string NodeKeyConstraintString(this Type type)
         {
             var nodeKeyParams = type.NodeKey();
-            var label = type.Label();
+            // Split by : to take the first label if a Node is marked as multiple (in case of inheritence).
+            // Example: [Node(Label = "Vehicle:Truck")] public class Truck => NodeKey will be created for Vehicle, useful in cases of shared node keys.
+            var label = type.Label().Split(':')[0];
             var nodeVariable = label.ToLower();
             var keyString = String.Join(", ", type.NodeKey().Select(nk => $"{nodeVariable}.{nk}"));
             if (String.IsNullOrEmpty(keyString))

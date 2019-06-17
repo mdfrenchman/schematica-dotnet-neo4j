@@ -84,7 +84,7 @@ namespace SchematicNeo4j.Tests
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
-
+            Assert.Empty(GetConstraints("NODE KEY", "Truck"));
 
             SchematicNeo4j.Schema.Initialize(assembly:Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
 
@@ -95,6 +95,9 @@ namespace SchematicNeo4j.Tests
             Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
 
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
+            // Truck NodeKey is the same as Car because Truck Label = "Car:Truck"
+            Assert.Empty(GetConstraints("NODE KEY", "Truck"));
+
         }
 
         [Fact(Skip = "Not Implimented Yet")]
