@@ -27,6 +27,30 @@ public class Car {
 }
 ```
 
+#### Using Shared (or inherited) Node Keys
+If you want to differentiate between 2 subclasses of an object but they are going to share the same node key, defined by the super class.
+We can do something like this.
+```csharp
+public class Person {
+  [NodeKey]
+  public string FirstName { get; set; }
+
+  [NodeKey]
+  public string LastName { get; set;}
+}
+
+[Node(Label="Person:Coach")]
+public class Coach : Person {
+  public int YearStarted {get; set;}
+}
+
+[Node(Label="Person:Player")]
+public class Player : Person {
+  public string Postion {get; set;}
+}
+```
+Both players and coaches have a name; players can be coaches, and vice versa. Either way, this keeps our data clean preventing a person from having 2 records in the system.
+
 ## SchematicNeo4j.Extensions
 There are a few provided extensions that we can take advantage of when using the CustomAttributes.
 Assume the following Vehicle definition:
@@ -55,3 +79,7 @@ var theLabel = typeof(Vehicle).Label();
 // for a type
 List<string> vehicleNodeKey = typeof(Vehicle).NodeKey();
 ```
+
+## Using SchematicNeo4j.Schema.Initialize
+Once we have our domain models identified we can use the `Schema` methods to put it into the graph.
+```cs
