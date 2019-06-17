@@ -81,5 +81,16 @@ List<string> vehicleNodeKey = typeof(Vehicle).NodeKey();
 ```
 
 ## Using SchematicNeo4j.Schema.Initialize
-Once we have our domain models identified we can use the `Schema` methods to put it into the graph.
-```cs
+Once we have our domain models identified we can use the `Schema` methods to put it into the graph. You can pass in either an entire assembly, a list, or a single Type.
+```csharp
+// Pass an Assembly and driver
+SchematicNeo4j.Schema.Initialize(assembly:Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
+
+// Pass a list of domain types
+  // Get this assembly
+  Assembly a = Assembly.GetExecutingAssembly();
+  // Limit to a specific namespace.
+  var listOfTypes = a.ExportedTypes.Where(t => t.Namespace == "MyExecutingThing.MyDomain").ToList();
+  SchematicNeo4j.Schema.Initialize(listOfTypes, driver);
+
+```
