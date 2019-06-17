@@ -122,7 +122,7 @@ namespace SchematicNeo4j.Tests
             Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
 
             // Execute
-            SchematicNeo4j.Schema.Clear(typeof(Tests.DomainSample.Vehicle), driver);
+            SchematicNeo4j.Schema.Clear(domainTypes: domainTypeList, driver: driver);
             // Confirm Execution
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
