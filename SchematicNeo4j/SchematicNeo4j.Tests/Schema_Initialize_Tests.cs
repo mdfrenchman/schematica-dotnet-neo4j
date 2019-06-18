@@ -98,6 +98,9 @@ namespace SchematicNeo4j.Tests
             // Truck NodeKey is the same as Car because Truck Label = "Car:Truck"
             Assert.Empty(GetConstraints("NODE KEY", "Truck"));
 
+            // Clear out all added constraints because I don't want to keep manually adding them for removal.
+            SchematicNeo4j.Schema.Clear(assembly: Assembly.GetAssembly(typeof(DomainSample.Person)), driver: driver);
+
         }
 
         [Fact(Skip = "Not Implimented Yet")]
@@ -139,7 +142,7 @@ namespace SchematicNeo4j.Tests
             using (var session = driver.Session(AccessMode.Read))
             {
                 var result = session.ReadTransaction(tx => tx.Run(
-                    "CALL db.constraints() yield description WHERE description contains (':' + (':'+$typeLabel+' ') ) AND description contains $constraintType RETURN description",
+                    "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
                     new { typeLabel = forLabel, constraintType = ofType }
                     ));
                 return result;
