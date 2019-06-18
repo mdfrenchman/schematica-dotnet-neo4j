@@ -187,7 +187,7 @@ namespace SchematicNeo4j.Constraints
 
         private static string Get(this Type type, ITransaction tx)
         {
-            var record = tx.Run("call db.constraints() yield description WHERE description contains $typeName AND description contains 'NODE KEY' RETURN description", new { typeName = type.Label() }).FirstOrDefault();
+            var record = tx.Run("call db.constraints() yield description WHERE description contains (':'+$typeName+' ') AND description contains 'NODE KEY' RETURN description", new { typeName = type.Label() }).FirstOrDefault();
             if (record is null)
                 return String.Empty;
             else if (!record[0].As<string>().Contains(") ASSERT ("))

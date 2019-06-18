@@ -107,6 +107,28 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Throws<Neo4jException>(() => SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.Vehicle), driver: null));
 
         }
+
+        [Fact]
+        public void NodeKey_Exists_Will_Not_Match_For_A_Partial_TypeName()
+        {
+            // Testing Get where a node key constraint for 'ThatThing' would be returned if the Label in question was 'That'
+            var listConstraints = new List<string>() {
+                "CONSTRAINT ON ( tt:ThatThing ) ASSERT (tt.Name, tt.Identity) IS NODE KEY",
+                "CONSTRAINT ON ( tt:That ) ASSERT (tt.Name, tt.Identity) IS NODE KEY"
+            };
+
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                session.WriteTransaction(tx => tx.Run($"CREATE {listConstraints[0]}"));
+            }
+            Assert.True(SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.ThatThing), driver));
+            // Test Get via Exists.
+            Assert.False(SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.That), driver));
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                session.WriteTransaction(tx => tx.Run($"DROP {listConstraints[0]}"));
+            }
+        }
         public void Dispose()
         {
             using (var session = driver.Session(AccessMode.Write))
