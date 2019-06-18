@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>SchematicNeo4j</PackageId>
-    <Version>0.1.1-beta</Version>
+    <Version>0.1.2-beta</Version>
     <Authors>Mike French; mdfrenchman</Authors>
     <Company>CALIBRE Systems, Inc.</Company>
     <Owner>mdfrenchman</Owner>
@@ -15,6 +15,7 @@ Helpful in quickly and consistently managing graph schema for your domain model.
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReleaseNotes>
+      Version 0.1.2-beta: Fix bug with a type having a partial name match to another type (ex: Car => RedCar)
       Version 0.1.1-beta: Adds inherited, or shared, node keys.
       Version 0.1.0-beta: Initial Release with methods that can accept an assembly, a collection of types, or a single type.
 Methods:
