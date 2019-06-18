@@ -182,7 +182,7 @@ namespace SchematicNeo4j.Tests.NodeKey
         private IStatementResult GetConstraints(string ofType, string forLabel, ITransaction tx)
         {
             return tx.Run(
-                    "CALL db.constraints() yield description WHERE description contains $typeLabel AND description contains $constraintType RETURN description",
+                    "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
                     new { typeLabel = forLabel, constraintType = ofType }
                     );
         }

@@ -115,7 +115,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             using (var session = driver.Session(AccessMode.Read))
             {
                 var result = session.ReadTransaction(tx => tx.Run(
-                    "CALL db.constraints() yield description WHERE description contains $typeLabel AND description contains $constraintType RETURN description",
+                    "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
                     new { typeLabel = forLabel, constraintType = ofType }
                     ));
                 return result;
