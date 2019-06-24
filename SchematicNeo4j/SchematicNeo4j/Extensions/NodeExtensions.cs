@@ -17,6 +17,12 @@ namespace SchematicNeo4j
             return result;
         }
 
+        /// <summary>
+        /// Gets the Node Attribute Label property from the type;
+        /// or the type of generic T as a string
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static string Label(this Type type)
         {
             // Check Label value in the Node Attribute.
