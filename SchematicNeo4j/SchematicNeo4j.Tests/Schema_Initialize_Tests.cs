@@ -14,6 +14,8 @@ namespace SchematicNeo4j.Tests
         private IDriver driver = null;
         private string carConstraint = "CONSTRAINT ON ( car:Car ) ASSERT (car.Make, car.Model, car.ModelYear) IS NODE KEY";
         private string personConstraint = "CONSTRAINT ON ( person:Person ) ASSERT (person.Name) IS NODE KEY";
+        private string commercialConstraint = "CONSTRAINT ON ( passengerplane:PassengerPlane ) ASSERT (passengerplane.Name, passengerplane.TailNumber) IS NODE KEY";
+
 
         public Schema_Initialize_Tests()
         {
@@ -79,13 +81,14 @@ namespace SchematicNeo4j.Tests
         }
 
         [Fact]
-        public void Initialize_With_EmptySchema_Will_SetNodeKeys_For_All_Types_In_Assembly()
+        public void Initialize_With_EmptySchema_Will_SetNodeKeys_For_All_NonAbstract_Public_Types_In_Assembly()
         {
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
             Assert.Empty(GetConstraints("NODE KEY", "Truck"));
-
+            Assert.Empty(GetConstraints("NODE KEY", "BasePlane"));
+            Assert.Empty(GetConstraints("NODE KEY", "PassengerPlane"));
             SchematicNeo4j.Schema.Initialize(assembly:Assembly.GetAssembly(typeof(DomainSample.Person)), driver);
 
             Assert.Single(GetConstraints("NODE KEY", "Car"));
@@ -97,6 +100,11 @@ namespace SchematicNeo4j.Tests
             Assert.Empty(GetConstraints("NODE KEY", "Keyless"));
             // Truck NodeKey is the same as Car because Truck Label = "Car:Truck"
             Assert.Empty(GetConstraints("NODE KEY", "Truck"));
+
+            // Inherit from Abstract : PassengerPlane get's a nodekey using BasePlane properties, but the abstract BasePlane doesn't.
+            Assert.Empty(GetConstraints("NODE KEY", "BasePlane"));
+            Assert.Single(GetConstraints("NODE KEY", "PassengerPlane"));
+            Assert.Equal(commercialConstraint, GetConstraints("NODE KEY", "PassengerPlane").First()[0]);
 
             // Clear out all added constraints because I don't want to keep manually adding them for removal.
             SchematicNeo4j.Schema.Clear(assembly: Assembly.GetAssembly(typeof(DomainSample.Person)), driver: driver);

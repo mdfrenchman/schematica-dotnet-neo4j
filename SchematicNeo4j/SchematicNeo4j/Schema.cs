@@ -2,6 +2,7 @@
 using SchematicNeo4j.Constraints;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace SchematicNeo4j
@@ -10,7 +11,7 @@ namespace SchematicNeo4j
     {
         public static void Initialize(Assembly assembly, IDriver driver = null)
         {
-            Initialize(assembly.ExportedTypes, driver);
+            Initialize(assembly.ExportedTypes.Where(t => !t.IsAbstract), driver);
         }
 
 
