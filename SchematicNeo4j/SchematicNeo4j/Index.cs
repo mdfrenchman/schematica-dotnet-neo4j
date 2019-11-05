@@ -1,11 +1,12 @@
 ﻿using Neo4j.Driver.V1;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SchematicNeo4j
 {
-    public class Index
+    public class Index : IEquatable<Index>
     {
 
         // new Schema.Indexes.Index() => Schema.Indexes.Index { _label, _properties };
@@ -52,5 +53,45 @@ namespace SchematicNeo4j
 
         public static bool Exists(ITransaction tx) { return false; }
 
+        #region Equality
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                return (this == (Index)obj);
+            }
+        }
+        public bool Equals(Index other)
+        {
+            return other != null &&
+                   Name == other.Name &&
+                   Label == other.Label &&
+                   Properties.SequenceEqual(other.Properties);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -1233081209;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Label);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string[]>.Default.GetHashCode(Properties);
+            return hashCode;
+        }
+
+        public static bool operator ==(Index left, Index right)
+        {
+            return EqualityComparer<Index>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(Index left, Index right)
+        {
+            return !(left == right);
+        }
+        #endregion
     }
+
 }
