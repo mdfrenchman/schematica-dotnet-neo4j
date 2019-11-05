@@ -8,5 +8,6 @@ namespace SchematicNeo4j.Attributes
     public class IndexAttribute : Attribute 
     {
         public string Name;
+        public string Label;
     }
 }
