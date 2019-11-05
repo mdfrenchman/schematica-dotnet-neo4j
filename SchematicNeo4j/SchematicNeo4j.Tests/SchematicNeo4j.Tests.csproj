@@ -20,8 +20,4 @@
     <ProjectReference Include="..\SchematicNeo4j\SchematicNeo4j.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Indexes\" />
-  </ItemGroup>
-
 </Project>

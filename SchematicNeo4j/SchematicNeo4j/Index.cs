@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SchematicNeo4j.Indexes
+namespace SchematicNeo4j
 {
     public class Index
     {

@@ -5,6 +5,7 @@ using SchematicNeo4j.Tests.DomainSample;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace SchematicNeo4j.Tests.Extensions
 {
@@ -77,6 +78,40 @@ namespace SchematicNeo4j.Tests.Extensions
             var testType = typeof(Vehicle);
             List<string> expected = new List<string>() { "Make", "Model", "ModelYear" };
             Xunit.Assert.Equal(expected, testType.NodeKey());
+        }
+
+        #endregion
+
+        #region Indexes
+        [Fact]
+        public void NodeExtension_Indexes_With_No_Properties_Returns_Empty_List()
+        {
+            var testType = typeof(Keyless);
+            Assert.Empty(testType.Indexes());
+
+        }
+
+        [Fact]
+        public void NodeExtension_Indexes_With_One_Index_Returns_List()
+        {
+            var testType = typeof(Person);
+            List<Index> expected = new List<Index>() { 
+                new Index(name: "PersonIndex", label: "Person", properties: new string[] { "Age" })};
+            var actual = testType.Indexes();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void NodeExtension_Indexes_With_Multiple_Indexes_Returns_List()
+        {
+            var testType = typeof(Vehicle);
+            List<Index> expected = new List<Index>() {
+                new Index(name: "CarMake", label: "Car", properties: new string[] { "Make" }),
+                new Index(name: "CarMakeModel", label: "Car", properties: new string[] { "Make", "Model" }),
+                new Index(name: "CarModelYear", label: "Car", properties: new string[] { "ModelYear" })
+            };
+            var actual = testType.Indexes();
+            Assert.Equal(expected, actual);
         }
 
         #endregion
