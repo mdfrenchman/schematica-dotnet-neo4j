@@ -34,23 +34,23 @@ namespace SchematicNeo4j
             Properties = properties;
         }
 
-        public void Create(IDriver driver = null) { }
+        public static void Create(IDriver driver = null) { }
 
-        public void Create(ISession session) { }
+        public static void Create(ISession session) { }
 
-        public void Create(ITransaction tx) { }
+        public static void Create(ITransaction tx) { }
 
-        public void Drop(IDriver driver = null) { }
+        public static void Drop(IDriver driver = null) { }
 
-        public void Drop(ISession session) { }
+        public static void Drop(ISession session) { }
 
-        public void Drop(ITransaction tx) { }
+        public static void Drop(ITransaction tx) { }
 
-        public bool Exists(IDriver driver = null) { return false; }
+        public static bool Exists(IDriver driver = null) { return false; }
 
-        public bool Exists(ISession session) { return false; }
+        public static bool Exists(ISession session) { return false; }
 
-        public bool Exists(ITransaction tx) { return false; }
+        public static bool Exists(ITransaction tx) { return false; }
 
     }
 }
