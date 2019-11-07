@@ -1,11 +1,7 @@
-﻿
-using Xunit;
-using SchematicNeo4j;
+﻿using Xunit;
 using SchematicNeo4j.Tests.DomainSample;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 
 namespace SchematicNeo4j.Tests.Extensions
 {
@@ -15,7 +11,7 @@ namespace SchematicNeo4j.Tests.Extensions
         [Fact]
         public void NodeExtension_Label_With_NodeAttribute_Returns_Label_AttributeProperty()
         {
-            var testType = typeof(SchematicNeo4j.Tests.DomainSample.Vehicle);
+            var testType = typeof(Vehicle);
             var actual = testType.Label();
             Xunit.Assert.NotEqual("Vehicle", actual);
             Xunit.Assert.Equal("Car", actual);
@@ -82,38 +78,5 @@ namespace SchematicNeo4j.Tests.Extensions
 
         #endregion
 
-        #region Indexes
-        [Fact]
-        public void NodeExtension_Indexes_With_No_Properties_Returns_Empty_List()
-        {
-            var testType = typeof(Keyless);
-            Assert.Empty(testType.Indexes());
-
-        }
-
-        [Fact]
-        public void NodeExtension_Indexes_With_One_Index_Returns_List()
-        {
-            var testType = typeof(Person);
-            List<Index> expected = new List<Index>() { 
-                new Index(name: "PersonIndex", label: "Person", properties: new string[] { "Age" })};
-            var actual = testType.Indexes();
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void NodeExtension_Indexes_With_Multiple_Indexes_Returns_List()
-        {
-            var testType = typeof(Vehicle);
-            List<Index> expected = new List<Index>() {
-                new Index(name: "CarMake", label: "Car", properties: new string[] { "Make" }),
-                new Index(name: "CarMakeModel", label: "Car", properties: new string[] { "Make", "Model" }),
-                new Index(name: "CarModelYear", label: "Car", properties: new string[] { "ModelYear" })
-            };
-            var actual = testType.Indexes();
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
     }
 }
