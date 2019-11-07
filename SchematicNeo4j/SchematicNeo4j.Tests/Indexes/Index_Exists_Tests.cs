@@ -90,7 +90,10 @@ namespace SchematicNeo4j.Tests.Indexes
         {
             using (var session = driver.Session(AccessMode.Write))
             {
-                session.WriteTransaction(tx => tx.Run("DROP INDEX ON :Truck(Make,TowingCapacity)"));
+                session.WriteTransaction(tx => {
+                    if (testIndex.Exists(tx))
+                        tx.Run("DROP INDEX ON :Truck(Make,TowingCapacity)");
+                });
             }
         }
 
