@@ -9,5 +9,6 @@ namespace SchematicNeo4j.Attributes
     {
         public string Name;
         public string Label;
+        public bool IsAbstract;
     }
 }
