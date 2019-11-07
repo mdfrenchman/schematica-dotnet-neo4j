@@ -11,6 +11,7 @@ namespace SchematicNeo4j.Tests.DomainSample
         [NodeKey]
         [Index(Name = "CarMake")]
         [Index(Name = "CarMakeModel")]
+        [Index(Label = "Truck", Name ="Truck_BrandTowCap")]
         public string Make { get; set; }
 
         [NodeKey]

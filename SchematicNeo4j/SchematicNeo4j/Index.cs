@@ -47,12 +47,7 @@ namespace SchematicNeo4j
 
         public static void Drop(ITransaction tx) { }
 
-        public static bool Exists(IDriver driver = null) { return false; }
-
-        public static bool Exists(ISession session) { return false; }
-
-        public static bool Exists(ITransaction tx) { return false; }
-
+        
         #region Equality
         public override bool Equals(object obj)
         {
@@ -91,6 +86,60 @@ namespace SchematicNeo4j
         {
             return !(left == right);
         }
+        #endregion
+
+        #region Exists
+
+        /// <summary>
+        /// Checks if the Index exists in the graph
+        /// </summary>
+        /// <remarks>
+        /// pre neo4j v4 the match is done on the label and properties. Ignoring the name. neo4j v4 allows naming of node_label_property indexes
+        /// </remarks>
+        /// <param name="driver"></param>
+        /// <returns></returns>
+        public bool Exists(IDriver driver = null)
+        {
+            if (driver is null)
+                driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.Exists() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                return this.Exists(session);
+            }
+        }
+
+        /// <summary>
+        /// Checks if the Index exists in the graph
+        /// /// </summary>
+        /// <remarks>
+        /// pre neo4j v4 the match is done on the label and properties. Ignoring the name. neo4j v4 allows naming of node_label_property indexes
+        /// </remarks>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public bool Exists(ISession session)
+        {
+            return session.ReadTransaction(tx => this.Exists(tx));
+        }
+
+        /// <summary>
+        /// Checks if the Index exists in the graph by Label and Properties
+        /// </summary>
+        /// <remarks>
+        /// pre neo4j v4 the match is done on the label and properties. Ignoring the name. neo4j v4 allows naming of node_label_property indexes. So we'll upgrade to that for the v4 version.
+        /// </remarks>
+        /// <param name="tx"></param>
+        /// <returns></returns>
+        public bool Exists(ITransaction tx)
+        {
+            var record = tx.Run(
+                "CALL db.indexes() yield indexName, tokenNames, properties, type WITH indexName as Name, tokenNames[0] as label, properties, type WHERE type = 'node_label_property' AND label = $label AND properties = $props RETURN (count(*) = 1)",
+                new { label = this.Label, props = this.Properties.ToList<string>() }
+                ).FirstOrDefault<IRecord>();
+            return (record is null) ? false : record[0].As<bool>();
+        }
+
         #endregion
     }
 

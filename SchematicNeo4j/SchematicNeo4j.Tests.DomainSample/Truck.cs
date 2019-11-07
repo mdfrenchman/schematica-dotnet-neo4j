@@ -11,5 +11,8 @@ namespace SchematicNeo4j.Tests.DomainSample
     [Node(Label="Car:Truck")]
     public class Truck : Vehicle
     {
+
+        [Index(Label = "Truck", Name = "Truck_BrandTowCap")]
+        public int TowingCapacity { get; set; }
     }
 }
