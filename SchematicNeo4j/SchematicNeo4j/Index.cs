@@ -22,7 +22,7 @@ namespace SchematicNeo4j
         public string Label { get; set; }
         public string[] Properties { get; set; }
 
-        public Index(){ }
+        public Index() { }
         public Index(string label, string[] properties)
         {
             Label = label;
@@ -34,12 +34,6 @@ namespace SchematicNeo4j
             Label = label;
             Properties = properties;
         }
-
-        public static void Create(IDriver driver = null) { }
-
-        public static void Create(ISession session) { }
-
-        public static void Create(ITransaction tx) { }
 
         public static void Drop(IDriver driver = null) { }
 
@@ -86,6 +80,54 @@ namespace SchematicNeo4j
         {
             return !(left == right);
         }
+        #endregion
+        
+        #region Create
+        /// <summary>
+        /// Creates this index in the graph
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
+        /// </remarks>
+        /// <param name="driver"></param>
+        public void Create(IDriver driver = null) 
+        {
+            if (driver is null)
+                driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.Create() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                this.Create(session);
+            }
+        }
+        
+        /// <summary>
+        /// Creates this index in the graph
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
+        /// </remarks>
+        /// <param name="session"></param>
+        public void Create(ISession session) 
+        {
+            session.WriteTransaction(tx => this.Create(tx));
+        }
+
+        /// <summary>
+        /// Creates this index in the graph
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
+        /// </remarks>
+        /// <param name="tx"></param>
+        public void Create(ITransaction tx)
+        {
+            // neo4j v4 will add name to index.
+            // doesn't need to check existing because it won't duplicate.
+            tx.Run($"CREATE INDEX ON :{this.Label}({String.Join(",", this.Properties)})");
+        }
+
         #endregion
 
         #region Exists
