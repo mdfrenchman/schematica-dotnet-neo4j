@@ -7,11 +7,10 @@ namespace SchematicNeo4j.Tests.Extensions
     public class IndexExtension_Tests
     {
         [Fact]
-        public void IndexExtension_Indexes_With_No_Properties_Returns_Empty_List()
+        public void IndexExtension_Indexes_Type_With_No_Properties_Returns_Empty_List()
         {
             var testType = typeof(Keyless);
             Assert.Empty(testType.Indexes());
-
         }
 
         [Fact]
@@ -23,7 +22,7 @@ namespace SchematicNeo4j.Tests.Extensions
         }
 
         [Fact]
-        public void IndexExtension_Indexes_With_One_Index_Returns_List()
+        public void IndexExtension_Indexes_Type_With_One_Index_Returns_List()
         {
             var testType = typeof(Person);
             List<Index> expected = new List<Index>() {
@@ -33,7 +32,7 @@ namespace SchematicNeo4j.Tests.Extensions
         }
 
         [Fact]
-        public void IndexExtension_Indexes_With_Multiple_Indexes_Returns_List()
+        public void IndexExtension_Indexes_Type_With_Multiple_Indexes_Returns_List()
         {
             var testType = typeof(Vehicle);
             List<Index> expected = new List<Index>() {
