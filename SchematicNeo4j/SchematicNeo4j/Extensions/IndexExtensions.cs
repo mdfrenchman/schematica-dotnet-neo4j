@@ -25,5 +25,54 @@ namespace SchematicNeo4j
                 ).ToList();
             return result;
         }
+
+        #region CreateIndexes
+        /// <summary>
+        /// Gets all indexes from the Type and Creates them in the graph.
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
+        /// </remarks>
+        /// <param name="type"></param>
+        /// <param name="driver"></param>
+        public static void CreateIndexes(this Type type, IDriver driver = null)
+        {
+            if (driver is null)
+                driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.CreateIndexes() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                type.Indexes().ForEach(idx => idx.Create(session: session));
+            }
+        }
+
+        /// <summary>
+        /// Gets all indexes from the Type and Creates them in the graph.
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
+        /// </remarks>
+        /// <param name="type"></param>
+        /// <param name="session"></param>
+        public static void CreateIndexes(this Type type, ISession session)
+        {
+            type.Indexes().ForEach(idx => idx.Create(session: session));
+        }
+
+        /// <summary>
+        /// Gets all indexes from the Type and Creates them in the graph.
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
+        /// </remarks>
+        /// <param name="type"></param>
+        /// <param name="tx"></param>
+        public static void CreateIndexes(this Type type, ITransaction tx)
+        {
+            type.Indexes().ForEach(idx => idx.Create(tx: tx));
+        }
+
+        #endregion
     }
 }
