@@ -14,7 +14,7 @@ namespace SchematicNeo4j
             var nodeType = type;
             PropertyInfo[] propertyInfo = nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var result = propertyInfo.SelectMany(pi =>
-                ((IndexAttribute[])pi.GetCustomAttributes(typeof(IndexAttribute), true)).Where(ai => !ai.IsAbstract)
+                ((IndexAttribute[])pi.GetCustomAttributes(typeof(IndexAttribute), true)).Where(ai => (pi.DeclaringType == nodeType && !ai.IsAbstract) || (pi.DeclaringType != nodeType && ai.IsAbstract))
                     .Select(ia => (name: ((IndexAttribute)ia).Name, label: ((IndexAttribute)ia).Label, prop: pi.Name))
                 ).GroupBy(t => (t.name, t.label))
                 .Select(grouping => new Index(
