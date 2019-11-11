@@ -74,5 +74,45 @@ namespace SchematicNeo4j
         }
 
         #endregion
+
+        #region DropIndexes
+        /// <summary>
+        /// Gets all indexes from this Type and Drops them from the graph.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="driver"></param>
+        public static void DropIndexes(this Type type, IDriver driver = null)
+        {
+            if (driver is null)
+                driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.DropIndexes() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                type.Indexes().ForEach(idx => idx.Drop(session: session));
+            }
+        }
+
+        /// <summary>
+        /// Gets all indexes from this Type and Drops them from the graph.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="session"></param>
+        public static void DropIndexes(this Type type, ISession session)
+        {
+            type.Indexes().ForEach(idx => idx.Drop(session: session));
+        }
+
+        /// <summary>
+        /// Gets all indexes from this Type and Drops them from the graph.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="tx"></param>
+        public static void DropIndexes(this Type type, ITransaction tx)
+        {
+            type.Indexes().ForEach(idx => idx.Drop(tx: tx));
+        }
+
+        #endregion
     }
 }

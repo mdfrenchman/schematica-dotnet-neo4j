@@ -34,13 +34,6 @@ namespace SchematicNeo4j
             Label = label;
             Properties = properties;
         }
-
-        public static void Drop(IDriver driver = null) { }
-
-        public static void Drop(ISession session) { }
-
-        public static void Drop(ITransaction tx) { }
-
         
         #region Equality
         public override bool Equals(object obj)
