@@ -24,15 +24,13 @@ namespace SchematicNeo4j.Tests.Extensions
         {
             driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "scratch"));
         }
-                
+
+        
         [Fact]
         public void CreateIndexes_With_Driver_Will_Create_All_Indexes_For_Type()
         {
             // Ensure none of the indexes exist yet.
-            for (int i = 0; i < 3; i++)
-            {
-                Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(expected[i]));
-            }
+            Assert.All(expected, idx => Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(idx)));
 
             // Execute
             testType.CreateIndexes(driver);
@@ -50,10 +48,7 @@ namespace SchematicNeo4j.Tests.Extensions
         public void CreateIndexes_With_GraphConnectionDriver_Will_Create_All_Indexes_For_Type()
         {
             // Ensure none of the indexes exist yet.
-            for (int i = 0; i < 3; i++)
-            {
-                Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(expected[i]));
-            }
+            Assert.All(expected, idx => Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(idx)));
 
             // Execute
             GraphConnection.SetDriver(driver);
@@ -80,10 +75,7 @@ namespace SchematicNeo4j.Tests.Extensions
         public void CreateIndexes_With_Session_Will_Create_All_Indexes_For_Type()
         {
             // Ensure none of the indexes exist yet.
-            for (int i = 0; i < 3; i++)
-            {
-                Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(expected[i]));
-            }
+            Assert.All(expected, idx => Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(idx)));
 
             // Execute
             using (ISession session = driver.Session(AccessMode.Write))
@@ -104,11 +96,8 @@ namespace SchematicNeo4j.Tests.Extensions
         public void CreateIndexes_With_Transaction_Will_Create_All_Indexes_For_Type()
         {
             // Ensure none of the indexes exist yet.
-            for (int i = 0; i < 3; i++)
-            {
-                Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(expected[i]));
-            }
-            
+            Assert.All(expected, idx => Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(idx)));
+
             // Execute
             using (ISession session = driver.Session(AccessMode.Write))
             {
