@@ -165,8 +165,10 @@ namespace SchematicNeo4j
         public void Drop(ITransaction tx)
         {
             // neo4j v4 will add name to index.
-            // doesn't need to check existing because it won't duplicate.
-            tx.Run($"DROP INDEX ON :{this.Label}({String.Join(",", this.Properties)})");
+            // check existence to avoid error.
+            if (this.Exists(tx))
+                tx.Run($"DROP INDEX ON :{this.Label}({String.Join(",", this.Properties)})");
+            // TODO: else : return warning;
         }
 
         #endregion
