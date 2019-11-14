@@ -123,6 +123,54 @@ namespace SchematicNeo4j
 
         #endregion
 
+        #region Drop
+        /// <summary>
+        /// Drops this index from the graph by label and properties.
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be used to match.
+        /// </remarks>
+        /// <param name="driver"></param>
+        public void Drop(IDriver driver = null)
+        {
+            if (driver is null)
+                driver = GraphConnection.Driver;
+            if (driver is null)
+                throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.Drop() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+            using (var session = driver.Session(AccessMode.Write))
+            {
+                this.Drop(session);
+            }
+        }
+
+        /// <summary>
+        /// Drops this index from the graph by label and properties.
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be used to match.
+        /// </remarks>
+        /// <param name="session"></param>
+        public void Drop(ISession session)
+        {
+            session.WriteTransaction(tx => this.Drop(tx));
+        }
+
+        /// <summary>
+        /// Drops this index from the graph by label and properties.
+        /// </summary>
+        /// <remarks>
+        ///  pre neo4j version 4.0, the Index.Name is not able to be used to match.
+        /// </remarks>
+        /// <param name="tx"></param>
+        public void Drop(ITransaction tx)
+        {
+            // neo4j v4 will add name to index.
+            // doesn't need to check existing because it won't duplicate.
+            tx.Run($"DROP INDEX ON :{this.Label}({String.Join(",", this.Properties)})");
+        }
+
+        #endregion
+
         #region Exists
 
         /// <summary>
