@@ -27,6 +27,7 @@ namespace SchematicNeo4j
                     foreach (Type type in domainTypes)
                     {
                         type.SetNodeKey(tx);
+                        type.CreateIndexes(tx);
                     }
                 });
             }
@@ -40,7 +41,10 @@ namespace SchematicNeo4j
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Initialize() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
             using (var session = driver.Session(AccessMode.Write))
             {
-                session.WriteTransaction(tx => type.SetNodeKey(tx));
+                session.WriteTransaction(tx => {
+                    type.SetNodeKey(tx);
+                    type.CreateIndexes(tx);
+                });
             }
         }
 
@@ -63,6 +67,7 @@ namespace SchematicNeo4j
                     foreach (Type type in domainTypes)
                     {
                         type.RemoveNodeKey(tx);
+                        type.DropIndexes(tx);
                     }
                 });
             }
@@ -76,7 +81,10 @@ namespace SchematicNeo4j
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Clear() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
             using (var session = driver.Session(AccessMode.Write))
             {
-                session.WriteTransaction(tx => type.RemoveNodeKey(tx));
+                session.WriteTransaction(tx => {
+                    type.RemoveNodeKey(tx);
+                    type.DropIndexes(tx);
+                });
             }
         }
             #endregion
