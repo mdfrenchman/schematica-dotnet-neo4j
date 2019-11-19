@@ -9,12 +9,17 @@ namespace SchematicNeo4j.Tests.DomainSample
     public class Vehicle
     {
         [NodeKey]
+        [Index(Name = "CarMake")]
+        [Index(Name = "CarMakeModel")]
+        [Index(Label = "Truck", Name ="Truck_BrandTowCap", IsAbstract = true)]
         public string Make { get; set; }
 
         [NodeKey]
+        [Index(Name = "CarMakeModel")]
         public string Model { get; set; }
 
         [NodeKey]
+        [Index(Name = "CarModelYear")]
         public int ModelYear { get; set; }
     }
 }

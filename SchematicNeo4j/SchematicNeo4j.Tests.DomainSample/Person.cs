@@ -8,5 +8,8 @@ namespace SchematicNeo4j.Tests.DomainSample
         [NodeKey]
         public string Name { get; set; }
 
+        [Index(Name = "PersonIndex")]
+        public int Age { get; set; }
+
     }
 }

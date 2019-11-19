@@ -1,10 +1,7 @@
-﻿
-using Xunit;
-using SchematicNeo4j;
+﻿using Xunit;
 using SchematicNeo4j.Tests.DomainSample;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SchematicNeo4j.Tests.Extensions
 {
@@ -14,7 +11,7 @@ namespace SchematicNeo4j.Tests.Extensions
         [Fact]
         public void NodeExtension_Label_With_NodeAttribute_Returns_Label_AttributeProperty()
         {
-            var testType = typeof(SchematicNeo4j.Tests.DomainSample.Vehicle);
+            var testType = typeof(Vehicle);
             var actual = testType.Label();
             Xunit.Assert.NotEqual("Vehicle", actual);
             Xunit.Assert.Equal("Car", actual);
@@ -80,5 +77,6 @@ namespace SchematicNeo4j.Tests.Extensions
         }
 
         #endregion
+
     }
 }
