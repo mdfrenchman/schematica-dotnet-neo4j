@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>SchematicNeo4j</PackageId>
-    <Version>0.1.2-beta</Version>
+    <Version>1.0.0</Version>
     <Authors>Mike French; mdfrenchman</Authors>
     <Company>CALIBRE Systems, Inc.</Company>
     <Owner>mdfrenchman</Owner>
@@ -15,12 +15,20 @@ Helpful in quickly and consistently managing graph schema for your domain model.
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReleaseNotes>
-      Version 0.1.2-beta: Fix bug with a type having a partial name match to another type (ex: Car => RedCar)
+      Version 1.0.0: Added Index management with Index object that maps to the IndexAttribute.  
+       - Index matching is done by Label and Properties for neo4j version 3.x
+       - Create/Drop of indexes added to Schema.Initialize and Schema.Clear
+       - IndexAttribute with Name, Label, Properties, and IsAbstract.
+         - IsAbstract allows for Indexes to utilize inherited properties and prevents partial indexes from being created.
+      Version 0.1.2-beta: Fix bug with a type having a partial name match to another type (ex: Car =&gt; RedCar)
       Version 0.1.1-beta: Adds inherited, or shared, node keys.
       Version 0.1.0-beta: Initial Release with methods that can accept an assembly, a collection of types, or a single type.
 Methods:
       Schema.Initialize
+      Schema.Clear
       NodeKey.Create/Drop/Exists/MatchesExisting
+      Index.Create/Drop/Exists
+      Type.Indexes/CreateIndexes/DropIndexes
     </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/mdfrenchman/schematica-dotnet-neo4j</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mdfrenchman/schematica-dotnet-neo4j</RepositoryUrl>
@@ -32,10 +40,6 @@ Methods:
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Neo4j.Driver" Version="1.7.2" />
   </ItemGroup>
 
