@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,16 +17,17 @@ namespace SchematicNeo4j
         {
             _neo4jDriver = driver;
         }
-        public static void SetDriver(string boltConnection, IAuthToken authToken)
+        public static void SetDriver(string boltConnection, IAuthToken authToken, Action<ConfigBuilder> driverConfig = null)
         {
-
-            _neo4jDriver = GraphDatabase.Driver(boltConnection, authToken, _driverConfig);
+            if (driverConfig is null) driverConfig = DriverConfig;
+            _neo4jDriver = GraphDatabase.Driver(boltConnection, authToken, driverConfig);
         }
-        public static void SetDriver(string boltConnection, string username, string password)
+        public static void SetDriver(string boltConnection, string username, string password, Action<ConfigBuilder> driverConfig = null)
         {
-            _neo4jDriver = GraphDatabase.Driver(boltConnection, AuthTokens.Basic(username, password), _driverConfig);
+            if (driverConfig is null) driverConfig = DriverConfig;
+            _neo4jDriver = GraphDatabase.Driver(boltConnection, AuthTokens.Basic(username, password), driverConfig);
         }
-
-        private static Config _driverConfig = new Config { ConnectionTimeout = TimeSpan.FromMilliseconds(-1), MaxTransactionRetryTime = TimeSpan.FromSeconds(60) };
+        
+        public static Action<ConfigBuilder> DriverConfig { get; set; } = o => o.WithMaxTransactionRetryTime(TimeSpan.FromSeconds(60)).WithConnectionTimeout(TimeSpan.FromMilliseconds(-1));
     }
 }

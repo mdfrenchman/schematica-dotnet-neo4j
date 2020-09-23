@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,13 +83,13 @@ namespace SchematicNeo4j
         ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
         /// </remarks>
         /// <param name="driver"></param>
-        public void Create(IDriver driver = null) 
+        public void Create(IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null) 
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.Create() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 this.Create(session);
             }
@@ -104,7 +104,7 @@ namespace SchematicNeo4j
         /// <param name="session"></param>
         public void Create(ISession session) 
         {
-            session.WriteTransaction(tx => this.Create(tx));
+            session.WriteTransaction(tx => { this.Create(tx); return true; });
         }
 
         /// <summary>
@@ -131,13 +131,13 @@ namespace SchematicNeo4j
         ///  pre neo4j version 4.0, the Index.Name is not able to be used to match.
         /// </remarks>
         /// <param name="driver"></param>
-        public void Drop(IDriver driver = null)
+        public void Drop(IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.Drop() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 this.Drop(session);
             }
@@ -152,7 +152,7 @@ namespace SchematicNeo4j
         /// <param name="session"></param>
         public void Drop(ISession session)
         {
-            session.WriteTransaction(tx => this.Drop(tx));
+            session.WriteTransaction(tx => { this.Drop(tx); return true; });
         }
 
         /// <summary>
@@ -183,13 +183,13 @@ namespace SchematicNeo4j
         /// </remarks>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public bool Exists(IDriver driver = null)
+        public bool Exists(IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.Exists() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 return this.Exists(session);
             }

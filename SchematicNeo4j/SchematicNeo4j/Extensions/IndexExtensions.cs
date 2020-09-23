@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SchematicNeo4j.Attributes;
-using Neo4j.Driver.V1;
+using Neo4j.Driver;
 
 namespace SchematicNeo4j
 {
@@ -35,13 +35,13 @@ namespace SchematicNeo4j
         /// </remarks>
         /// <param name="type"></param>
         /// <param name="driver"></param>
-        public static void CreateIndexes(this Type type, IDriver driver = null)
+        public static void CreateIndexes(this Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.CreateIndexes() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 type.Indexes().ForEach(idx => idx.Create(session: session));
             }
@@ -81,13 +81,13 @@ namespace SchematicNeo4j
         /// </summary>
         /// <param name="type"></param>
         /// <param name="driver"></param>
-        public static void DropIndexes(this Type type, IDriver driver = null)
+        public static void DropIndexes(this Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Index.DropIndexes() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 type.Indexes().ForEach(idx => idx.Drop(session: session));
             }

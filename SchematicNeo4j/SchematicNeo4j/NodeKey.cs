@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +17,12 @@ namespace SchematicNeo4j.Constraints
         /// </remarks>
         /// <param name="type"></param>
         /// <param name="driver"></param>
-        public static void Create(Type type, IDriver driver = null) {
+        public static void Create(Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null) {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "NodeKey.Create() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 Create(type, session);
             }
@@ -37,7 +37,7 @@ namespace SchematicNeo4j.Constraints
         /// <param name="type"></param>
         /// <param name="session"></param>
         public static void Create(Type type, ISession session) {
-            session.WriteTransaction(tx => Create(type, tx));
+            session.WriteTransaction(tx => { Create(type, tx); return true; });
         }
 
         /// <summary>
@@ -45,12 +45,12 @@ namespace SchematicNeo4j.Constraints
         /// </summary>
         /// <param name="type"></param>
         /// <param name="driver"></param>
-        public static void Drop(Type type, IDriver driver = null) {
+        public static void Drop(Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null) {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "NodeKey.Drop() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 Drop(type, session);
             }
@@ -62,7 +62,7 @@ namespace SchematicNeo4j.Constraints
         /// <param name="type"></param>
         /// <param name="session"></param>
         public static void Drop(Type type, ISession session) {
-            session.WriteTransaction(tx => Drop(type, tx));
+            session.WriteTransaction(tx => { Drop(type, tx); return true; });
         }
 
         /// <summary>
@@ -74,12 +74,12 @@ namespace SchematicNeo4j.Constraints
         /// <param name="type"></param>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public static bool Exists(Type type, IDriver driver = null) {
+        public static bool Exists(Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null) {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "NodeKey.Exists() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 return Exists(type, session);
             }
@@ -104,12 +104,12 @@ namespace SchematicNeo4j.Constraints
         /// <param name="type"></param>
         /// <param name="driver"></param>
         /// <returns></returns>
-        public static bool MatchesExisting(Type type, IDriver driver = null) {
+        public static bool MatchesExisting(Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null) {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "NodeKey.MatchesExisting() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(sessionConfigOptions))
             {
                 return MatchesExisting(type, session);
             }
