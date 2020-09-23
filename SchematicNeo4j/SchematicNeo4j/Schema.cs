@@ -22,6 +22,10 @@ namespace SchematicNeo4j
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Initialize() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
 
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
             using (var session = driver.Session(sessionConfigOptions))
             {
                 return session.WriteTransaction(tx =>
@@ -42,6 +46,10 @@ namespace SchematicNeo4j
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Initialize() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
             using (var session = driver.Session(sessionConfigOptions))
             {
                 return session.WriteTransaction(tx => {
@@ -65,6 +73,10 @@ namespace SchematicNeo4j
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Clear() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
             using (var session = driver.Session(sessionConfigOptions))
             {
                 return session.WriteTransaction(tx => {
@@ -84,6 +96,10 @@ namespace SchematicNeo4j
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Clear() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
             using (var session = driver.Session(sessionConfigOptions))
             {
                 return session.WriteTransaction(tx => {
