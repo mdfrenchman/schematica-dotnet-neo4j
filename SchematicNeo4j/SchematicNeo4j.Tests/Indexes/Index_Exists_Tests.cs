@@ -108,8 +108,8 @@ namespace SchematicNeo4j.Tests.Indexes
         {
             using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                var result = session.ReadTransaction(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH indexName as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index));
-                return result.Select(record => new Index(label: record["Label"].As<string>(), properties: record["Properties"].As<IList<string>>().ToArray<string>())).FirstOrDefault();
+                var recordList = session.ReadTransaction(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH indexName as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index).ToList());
+                return recordList.Select(record => new Index(label: record["Label"].As<string>(), properties: record["Properties"].As<IList<string>>().ToArray<string>())).FirstOrDefault();
             }
         }
     }

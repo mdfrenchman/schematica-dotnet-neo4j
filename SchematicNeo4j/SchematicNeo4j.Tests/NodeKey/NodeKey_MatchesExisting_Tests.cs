@@ -187,11 +187,11 @@ namespace SchematicNeo4j.Tests.NodeKey
                     );
         }
 
-        private IResult GetConstraints(string ofType, string forLabel)
+        private List<IRecord> GetConstraints(string ofType, string forLabel)
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                return session.ReadTransaction(tx => GetConstraints(ofType, forLabel, tx));
+                return session.ReadTransaction(tx => GetConstraints(ofType, forLabel, tx).ToList());
             }
         }
 

@@ -180,15 +180,15 @@ namespace SchematicNeo4j.Tests
             }
         }
 
-        private IResult GetConstraints(string ofType, string forLabel)
+        private List<IRecord> GetConstraints(string ofType, string forLabel)
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                var result = session.ReadTransaction(tx => tx.Run(
+                return session.ReadTransaction(tx => tx.Run(
                     "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
                     new { typeLabel = forLabel, constraintType = ofType }
-                    ));
-                return result;
+                    ).ToList());
+                
             }
         }
 
