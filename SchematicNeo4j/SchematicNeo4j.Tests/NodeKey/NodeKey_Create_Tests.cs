@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +71,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "Car"));
 
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 // Execute
                 SchematicNeo4j.Constraints.NodeKey.Create(typeof(Tests.DomainSample.Vehicle), session);
@@ -83,7 +83,7 @@ namespace SchematicNeo4j.Tests.NodeKey
 
         public void Dispose()
         {
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 if (GetConstraints("NODE KEY", "Car").Count() == 1)
                     session.WriteTransaction(tx => tx.Run($"DROP {carConstraint}"));
@@ -92,9 +92,9 @@ namespace SchematicNeo4j.Tests.NodeKey
             }
         }
 
-        private IStatementResult GetConstraints(string ofType, string forLabel)
+        private IResult GetConstraints(string ofType, string forLabel)
         {
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 var result = session.ReadTransaction(tx => tx.Run(
                     "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",

@@ -11,7 +11,7 @@ namespace SchematicNeo4j.Tests
     {
         private IDriver driver = null;
         private string carConstraint = "CONSTRAINT ON ( car:Car ) ASSERT (car.Make, car.Model, car.ModelYear) IS NODE KEY";
-        private string truckConstraint = "CONSTRAINT ON ( truck:Truck ) ASSERT (truck.Make, truck.Model, truck.ModelYear) IS NODE KEY";
+        //private string truckConstraint = "CONSTRAINT ON ( truck:Truck ) ASSERT (truck.Make, truck.Model, truck.ModelYear) IS NODE KEY";
 
         public Schema_SubClass_Tests()
         {

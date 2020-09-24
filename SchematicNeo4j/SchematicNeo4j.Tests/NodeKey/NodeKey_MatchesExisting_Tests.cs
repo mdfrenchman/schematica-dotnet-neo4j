@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Empty(GetConstraints("NODE KEY", "ME"));
 
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
             }
@@ -49,7 +49,7 @@ namespace SchematicNeo4j.Tests.NodeKey
            
             
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
             }
@@ -70,7 +70,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Empty(GetConstraints("NODE KEY", "ME"));
             
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
             }
@@ -78,7 +78,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Single(GetConstraints("NODE KEY", "ME"));
             Assert.Equal(meConstraint, GetConstraints("NODE KEY", "ME").First()[0]);
 
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 // Test True
                 var actualTrue = SchematicNeo4j.Constraints.NodeKey.MatchesExisting(typeof(Tests.DomainSample.MatchesExistingNode), session);
@@ -91,7 +91,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "ME"));
             // Returns False
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 var actual = SchematicNeo4j.Constraints.NodeKey.MatchesExisting(typeof(Tests.DomainSample.MatchesExistingNode), session);
                 Assert.False(actual);
@@ -105,7 +105,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Empty(GetConstraints("NODE KEY", "ME"));
 
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
             }
@@ -113,7 +113,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Single(GetConstraints("NODE KEY", "ME"));
             Assert.Equal(meConstraint, GetConstraints("NODE KEY", "ME").First()[0]);
 
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 // Test True
                 var actualTrue = SchematicNeo4j.Constraints.NodeKey.MatchesExisting(typeof(Tests.DomainSample.MatchesExistingNode), session);
@@ -127,7 +127,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Empty(GetConstraints("NODE KEY", "ME"));
 
             // Setup to Wrong Key
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE CONSTRAINT ON ( me:ME ) ASSERT (me.WrongOne) IS NODE KEY"));
             }
@@ -135,14 +135,14 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Single(GetConstraints("NODE KEY", "ME"));
             Assert.NotEqual(meConstraint, GetConstraints("NODE KEY", "ME").First()[0]);
             // Return False
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 var actual = SchematicNeo4j.Constraints.NodeKey.MatchesExisting(typeof(Tests.DomainSample.MatchesExistingNode), session);
                 Assert.False(actual);
             }
 
             // Setup to Wrong Key
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"DROP CONSTRAINT ON ( me:ME ) ASSERT (me.WrongOne) IS NODE KEY"));
             }
@@ -161,7 +161,7 @@ namespace SchematicNeo4j.Tests.NodeKey
 
         public void Dispose()
         {
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx =>
                 {
@@ -174,12 +174,12 @@ namespace SchematicNeo4j.Tests.NodeKey
                         {
                             
                         }
-                        
+                    return true;
                 });
             }
         }
 
-        private IStatementResult GetConstraints(string ofType, string forLabel, ITransaction tx)
+        private IResult GetConstraints(string ofType, string forLabel, ITransaction tx)
         {
             return tx.Run(
                     "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
@@ -187,9 +187,9 @@ namespace SchematicNeo4j.Tests.NodeKey
                     );
         }
 
-        private IStatementResult GetConstraints(string ofType, string forLabel)
+        private IResult GetConstraints(string ofType, string forLabel)
         {
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 return session.ReadTransaction(tx => GetConstraints(ofType, forLabel, tx));
             }

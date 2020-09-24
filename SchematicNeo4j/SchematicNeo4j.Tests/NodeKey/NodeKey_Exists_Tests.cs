@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.False(actualFalse);
 
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {teConstraint}"));
             }
@@ -56,7 +56,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.False(actualFalse);
 
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {teConstraint}"));
             }
@@ -74,14 +74,14 @@ namespace SchematicNeo4j.Tests.NodeKey
         {
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "TE"));
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 // Test False
                 var actualFalse = SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.TestExistsNode), driver);
                 Assert.False(actualFalse);
             }
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {teConstraint}"));
             }
@@ -89,7 +89,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Single(GetConstraints("NODE KEY", "TE"));
             Assert.Equal(teConstraint, GetConstraints("NODE KEY", "TE").First()[0]);
 
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 // Test True
                 var actualTrue = SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.TestExistsNode), driver);
@@ -117,31 +117,32 @@ namespace SchematicNeo4j.Tests.NodeKey
                 "CONSTRAINT ON ( tt:That ) ASSERT (tt.Name, tt.Identity) IS NODE KEY"
             };
 
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {listConstraints[0]}"));
             }
             Assert.True(SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.ThatThing), driver));
             // Test Get via Exists.
             Assert.False(SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.That), driver));
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"DROP {listConstraints[0]}"));
             }
         }
         public void Dispose()
         {
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                     session.WriteTransaction(tx =>
                     {
                         if (GetConstraints("NODE KEY", "TE", tx).Count() == 1)
                             tx.Run($"DROP {teConstraint}");
+                        return true;
                     });
             }
         }
 
-        private IStatementResult GetConstraints(string ofType, string forLabel, ITransaction tx)
+        private IResult GetConstraints(string ofType, string forLabel, ITransaction tx)
         {
             return tx.Run(
                     "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
@@ -149,9 +150,9 @@ namespace SchematicNeo4j.Tests.NodeKey
                     );
         }
 
-        private IStatementResult GetConstraints(string ofType, string forLabel)
+        private IResult GetConstraints(string ofType, string forLabel)
         {
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 return session.ReadTransaction(tx => GetConstraints(ofType, forLabel, tx));
             }

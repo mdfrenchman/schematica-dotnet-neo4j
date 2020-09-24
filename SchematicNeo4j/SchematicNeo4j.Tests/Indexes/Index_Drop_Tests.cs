@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +62,7 @@ namespace SchematicNeo4j.Tests.Indexes
             CreateIndexForTest();
             Assert.Equal(testIndex, GetIndexForTest_OverloadUnnamedIndexAsNull(testIndex));
             // Execute
-            using (ISession session = driver.Session(AccessMode.Write))
+            using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 testIndex.Drop(session);
             }
@@ -104,11 +104,12 @@ namespace SchematicNeo4j.Tests.Indexes
 
         public void Dispose()
         {
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => {
                     if (testIndex.Exists(tx))
                         tx.Run("DROP INDEX ON :IndexDropTest(Prop1,Prop2)");
+                    return true;
                 });
             }
         }
@@ -116,7 +117,7 @@ namespace SchematicNeo4j.Tests.Indexes
 
         private void CreateIndexForTest()
         {
-            using (ISession session = driver.Session(AccessMode.Write))
+            using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run("CREATE INDEX ON :IndexDropTest(Prop1,Prop2)"));
             }
@@ -124,7 +125,7 @@ namespace SchematicNeo4j.Tests.Indexes
 
         private Index GetIndexForTest_OverloadUnnamedIndexAsNull(Index index)
         {
-            using (ISession session = driver.Session(AccessMode.Read))
+            using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 var result = session.ReadTransaction(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH CASE indexName WHEN 'Unnamed index' THEN null ELSE indexName END as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index));
                 return result.Select(record => new Index(name: record["Name"].As<string>(), label: record["Label"].As<string>(), properties: record["Properties"].As<IList<string>>().ToArray<string>())).FirstOrDefault();
@@ -133,7 +134,7 @@ namespace SchematicNeo4j.Tests.Indexes
 
         private Index GetIndexForTest_KeepUnnamedIndex(Index index)
         {
-            using (ISession session = driver.Session(AccessMode.Read))
+            using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
                 var result = session.ReadTransaction(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH indexName as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index));
                 return result.Select(record => new Index(name: record["Name"].As<string>(), label: record["Label"].As<string>(), properties: record["Properties"].As<IList<string>>().ToArray<string>())).FirstOrDefault();
