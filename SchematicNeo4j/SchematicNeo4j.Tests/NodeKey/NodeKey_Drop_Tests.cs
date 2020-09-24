@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {personConstraint}"));
             }
@@ -50,7 +50,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {personConstraint}"));
             }
@@ -74,7 +74,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Before
             Assert.Empty(GetConstraints("NODE KEY", "Person"));
             // Setup
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => tx.Run($"CREATE {personConstraint}"));
             }
@@ -82,7 +82,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             Assert.Single(GetConstraints("NODE KEY", "Person"));
             Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
 
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 // Execute
                 SchematicNeo4j.Constraints.NodeKey.Drop(typeof(Tests.DomainSample.Person), session);
@@ -103,22 +103,21 @@ namespace SchematicNeo4j.Tests.NodeKey
         }
         public void Dispose()
         {
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 if (GetConstraints("NODE KEY", "Person").Count() == 1)
                     session.WriteTransaction(tx => tx.Run($"DROP {personConstraint}"));
             }
         }
 
-        private IStatementResult GetConstraints(string ofType, string forLabel)
+        private List<IRecord> GetConstraints(string ofType, string forLabel)
         {
-            using (var session = driver.Session(AccessMode.Read))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                var result = session.ReadTransaction(tx => tx.Run(
+                return session.ReadTransaction(tx => tx.Run(
                     "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
                     new { typeLabel = forLabel, constraintType = ofType }
-                    ));
-                return result;
+                    ).ToList());
             }
         }
 

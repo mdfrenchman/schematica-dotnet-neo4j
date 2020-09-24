@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using SchematicNeo4j.Constraints;
 using System;
 using System.Collections.Generic;
@@ -9,84 +9,106 @@ namespace SchematicNeo4j
 {
     public static class Schema
     {
-        public static void Initialize(Assembly assembly, IDriver driver = null)
+        public static bool Initialize(Assembly assembly, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
-            Initialize(assembly.ExportedTypes.Where(t => !t.IsAbstract), driver);
+            return Initialize(assembly.ExportedTypes.Where(t => !t.IsAbstract), driver, sessionConfigOptions);
         }
 
 
-        public static void Initialize(IEnumerable<Type> domainTypes, IDriver driver = null)
+        public static bool Initialize(IEnumerable<Type> domainTypes, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Initialize() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
+            using (var session = driver.Session(sessionConfigOptions))
             {
-                session.WriteTransaction(tx => {
+                return session.WriteTransaction(tx =>
+                {
                     foreach (Type type in domainTypes)
                     {
                         type.SetNodeKey(tx);
                         type.CreateIndexes(tx);
                     }
+                    return true;
                 });
             }
         }
 
-        public static void Initialize(Type type, IDriver driver = null)
+        public static bool Initialize(Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Initialize() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
+            using (var session = driver.Session(sessionConfigOptions))
             {
-                session.WriteTransaction(tx => {
+                return session.WriteTransaction(tx => {
                     type.SetNodeKey(tx);
                     type.CreateIndexes(tx);
+                    return true;
                 });
             }
         }
 
         #region Clear
-        public static void Clear(Assembly assembly, IDriver driver = null)
+        public static bool Clear(Assembly assembly, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
-            Clear(assembly.ExportedTypes, driver);
+            return Clear(assembly.ExportedTypes, driver, sessionConfigOptions);
         }
 
 
-        public static void Clear(IEnumerable<Type> domainTypes, IDriver driver = null)
+        public static bool Clear(IEnumerable<Type> domainTypes, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Clear() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
+            using (var session = driver.Session(sessionConfigOptions))
             {
-                session.WriteTransaction(tx => {
+                return session.WriteTransaction(tx => {
                     foreach (Type type in domainTypes)
                     {
                         type.RemoveNodeKey(tx);
                         type.DropIndexes(tx);
                     }
+                    return true;
                 });
             }
         }
 
-        public static void Clear(Type type, IDriver driver = null)
+        public static bool Clear(Type type, IDriver driver = null, Action<SessionConfigBuilder> sessionConfigOptions = null)
         {
             if (driver is null)
                 driver = GraphConnection.Driver;
             if (driver is null)
                 throw new Neo4jException(code: "GraphConnection.Driver.Missing", message: "Schema.Clear() => The driver was not passed in or set for the library. Recommend: GraphConnection.SetDriver(driver);");
-            using (var session = driver.Session(AccessMode.Write))
+
+            if (sessionConfigOptions is null)
+                sessionConfigOptions = o => o.WithDefaultAccessMode(AccessMode.Write);
+
+            using (var session = driver.Session(sessionConfigOptions))
             {
-                session.WriteTransaction(tx => {
+                return session.WriteTransaction(tx => {
                     type.RemoveNodeKey(tx);
                     type.DropIndexes(tx);
+                    return true;
                 });
             }
         }
-            #endregion
+        #endregion
     }
 }

@@ -1,4 +1,4 @@
-﻿using Neo4j.Driver.V1;
+﻿using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,7 +78,7 @@ namespace SchematicNeo4j.Tests.Extensions
             Assert.All(expected, idx => Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(idx)));
 
             // Execute
-            using (ISession session = driver.Session(AccessMode.Write))
+            using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 testType.CreateIndexes(session);
             }
@@ -99,9 +99,9 @@ namespace SchematicNeo4j.Tests.Extensions
             Assert.All(expected, idx => Assert.Null(GetIndexForTest_OverloadUnnamedIndexAsNull(idx)));
 
             // Execute
-            using (ISession session = driver.Session(AccessMode.Write))
+            using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => testType.CreateIndexes(tx));
+                session.WriteTransaction(tx => { testType.CreateIndexes(tx); return true; });
             }
 
             // Test Outcome
@@ -115,7 +115,7 @@ namespace SchematicNeo4j.Tests.Extensions
 
         public void Dispose()
         {
-            using (var session = driver.Session(AccessMode.Write))
+            using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 session.WriteTransaction(tx => {
                     foreach (Index item in expected)
@@ -123,16 +123,17 @@ namespace SchematicNeo4j.Tests.Extensions
                         if (item.Exists(tx))
                             item.Drop(tx);
                     }
+                    return true;
                 });
             }
         }
 
         private Index GetIndexForTest_OverloadUnnamedIndexAsNull(Index index)
         {
-            using (ISession session = driver.Session(AccessMode.Read))
+            using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                var result = session.ReadTransaction(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH CASE indexName WHEN 'Unnamed index' THEN null ELSE indexName END as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index));
-                return result.Select(record => new Index(name: record["Name"].As<string>(), label: record["Label"].As<string>(), properties: record["Properties"].As<IList<string>>().ToArray<string>())).FirstOrDefault();
+                var recordList = session.ReadTransaction(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH CASE indexName WHEN 'Unnamed index' THEN null ELSE indexName END as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index).ToList());
+                return recordList.Select(record => new Index(name: record["Name"].As<string>(), label: record["Label"].As<string>(), properties: record["Properties"].As<IList<string>>().ToArray<string>())).FirstOrDefault();
             }
         }
     }
