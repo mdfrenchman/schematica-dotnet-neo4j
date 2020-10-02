@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>1.0.0</Version>
     <Authors>Mike French</Authors>
-    <Company>CALIBRE Systems, Inc.</Company>
+    <Company></Company>
     <Description>Attributes used for SchematicNeo4j</Description>
     <Summary>Attributes used for SchematicNeo4j</Summary>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
