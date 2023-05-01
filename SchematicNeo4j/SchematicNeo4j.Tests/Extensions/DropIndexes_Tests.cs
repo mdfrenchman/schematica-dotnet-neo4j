@@ -20,7 +20,7 @@ namespace SchematicNeo4j.Tests.Extensions
 
         public DropIndexes_Tests()
         {
-            driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "scratch"));
+            driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "SchematicNeo4j-Test!"));
         }
 
 

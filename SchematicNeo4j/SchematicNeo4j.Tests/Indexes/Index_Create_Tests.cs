@@ -15,7 +15,7 @@ namespace SchematicNeo4j.Tests.Indexes
         private readonly Index testIndex = new Index(label: "IndexCreateTest", new string[] { "Prop1", "Prop2" });
         public Index_Create_Tests()
         {
-            driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "scratch"));
+            driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "SchematicNeo4j-Test!"));
         }
 
         [Fact]
