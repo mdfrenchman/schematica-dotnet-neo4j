@@ -32,5 +32,24 @@ namespace SchematicNeo4j
                 type.Name;
 
         }
+
+        public static string NodeKeyName(this Type type)
+        {
+            // Check NodeKey value in the Node Attribute.
+            NodeAttribute attr = (NodeAttribute)type.GetCustomAttribute(typeof(NodeAttribute), false);
+
+            // if the NodeKey is property is set on the attribute, then use it.
+            if (!string.IsNullOrWhiteSpace(attr?.NodeKey))
+                return attr.NodeKey;
+
+            // else use `nkPrimaryLabel`
+            var primaryLabel = (!(attr is null) && !String.IsNullOrEmpty(attr.Label)) ?
+                attr.Label.Split(':')[0] :
+            // Get the ClassName if there is no Node Attribute with a Label defined.
+                type.Name;
+            return $"nk{primaryLabel}";
+
+        }
+
     }
 }

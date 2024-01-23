@@ -9,6 +9,7 @@ namespace SchematicNeo4j.Attributes
     /// </summary>
     /// <remarks>
     /// The class name will be used for the Label unless a Label property is set.
+    /// The node key will be `nk`+class name or the first label in the Label property.
     /// </remarks>
     /// <example>
     /// [Node(Label="Vehicle:Car")] | [Node(Label="Person")] | [Node]
@@ -17,5 +18,9 @@ namespace SchematicNeo4j.Attributes
     public class NodeAttribute : Attribute
     {
         public string Label;
+        /// <summary>
+        /// The Name of the NodeKey Constraint if any, defaults to `nk`+firstLabel.
+        /// </summary>
+        public string NodeKey;
     }
 }

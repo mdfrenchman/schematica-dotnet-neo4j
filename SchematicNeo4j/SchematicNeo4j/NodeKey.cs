@@ -116,7 +116,7 @@ namespace SchematicNeo4j.Constraints
         }
         
         /// <summary>
-        /// Determins if the domain type Node Key is the same as the Node Key in the graph.
+        /// Determines if the domain type Node Key is the same as the Node Key in the graph.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="session"></param>
@@ -175,12 +175,7 @@ namespace SchematicNeo4j.Constraints
 
         private static void Drop(this Type type, ITransaction tx)
         {
-            // TODO: For calls from SetConstraint, we're calling Exists twice. Need to refactor.
-            if (type.Exists(tx))
-            {
-                var constraint = type.NodeKeyConstraintString();
-                if (!String.IsNullOrEmpty(constraint))
-                    tx.Run($"DROP {constraint}");
+            tx.Run($"DROP CONSTRAINT {type.NodeKeyName()} IF EXISTS");
             }
 
         }
