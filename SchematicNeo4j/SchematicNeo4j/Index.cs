@@ -104,7 +104,7 @@ namespace SchematicNeo4j
         /// <param name="session"></param>
         public void Create(ISession session) 
         {
-            session.WriteTransaction(tx => { this.Create(tx); return true; });
+            session.ExecuteWrite(tx => { this.Create(tx); return true; });
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace SchematicNeo4j
         ///  pre neo4j version 4.0, the Index.Name is not able to be stored.
         /// </remarks>
         /// <param name="tx"></param>
-        public void Create(ITransaction tx)
+        public void Create(IQueryRunner tx)
         {
             // neo4j v4 will add name to index.
             // doesn't need to check existing because it won't duplicate.
@@ -152,7 +152,7 @@ namespace SchematicNeo4j
         /// <param name="session"></param>
         public void Drop(ISession session)
         {
-            session.WriteTransaction(tx => { this.Drop(tx); return true; });
+            session.ExecuteWrite(tx => { this.Drop(tx); return true; });
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace SchematicNeo4j
         ///  pre neo4j version 4.0, the Index.Name is not able to be used to match.
         /// </remarks>
         /// <param name="tx"></param>
-        public void Drop(ITransaction tx)
+        public void Drop(IQueryRunner tx)
         {
             // neo4j v4 will add name to index.
             // check existence to avoid error.
@@ -205,7 +205,7 @@ namespace SchematicNeo4j
         /// <returns></returns>
         public bool Exists(ISession session)
         {
-            return session.ReadTransaction(tx => this.Exists(tx));
+            return session.ExecuteRead(tx => this.Exists(tx));
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace SchematicNeo4j
         /// </remarks>
         /// <param name="tx"></param>
         /// <returns></returns>
-        public bool Exists(ITransaction tx)
+        public bool Exists(IQueryRunner tx)
         {
             var record = tx.Run(
                 "CALL db.indexes() yield indexName, tokenNames, properties, type WITH indexName as Name, tokenNames[0] as label, properties, type WHERE type = 'node_label_property' AND label = $label AND properties = $props RETURN (count(*) = 1)",

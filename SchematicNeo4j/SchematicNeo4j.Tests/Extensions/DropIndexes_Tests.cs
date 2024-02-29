@@ -92,7 +92,7 @@ namespace SchematicNeo4j.Tests.Extensions
             // Execute
             using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => { testType.DropIndexes(tx); return true; });
+                session.ExecuteWrite(tx => { testType.DropIndexes(tx); return true; });
             }
 
             // Test Outcome
@@ -103,7 +103,7 @@ namespace SchematicNeo4j.Tests.Extensions
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => {
+                session.ExecuteWrite(tx => {
                     foreach (Index item in notExpected)
                     {
                         if (item.Exists(tx))
@@ -118,7 +118,7 @@ namespace SchematicNeo4j.Tests.Extensions
         {
             using (ISession session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                var recordList = session.ReadTransaction(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH CASE indexName WHEN 'Unnamed index' THEN null ELSE indexName END as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index).ToList());
+                var recordList = session.ExecuteRead(tx => tx.Run("CALL db.indexes() yield indexName, tokenNames, properties WITH CASE indexName WHEN 'Unnamed index' THEN null ELSE indexName END as Name, tokenNames[0] as Label, properties as Properties WHERE Label = $Label AND Properties = $Properties RETURN *", index).ToList());
                 return recordList.Select(record => new Index(name: record["Name"].As<string>(), label: record["Label"].As<string>(), properties: record["Properties"].As<IList<string>>().ToArray<string>())).FirstOrDefault();
             }
         }

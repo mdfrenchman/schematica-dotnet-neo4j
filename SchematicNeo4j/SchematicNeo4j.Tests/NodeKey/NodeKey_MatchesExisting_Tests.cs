@@ -29,7 +29,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"CREATE {meConstraint}"));
             }
 
             //Confirm Setup
@@ -51,7 +51,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"CREATE {meConstraint}"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "ME"));
@@ -72,7 +72,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"CREATE {meConstraint}"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "ME"));
@@ -107,7 +107,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {meConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"CREATE {meConstraint}"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "ME"));
@@ -129,7 +129,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup to Wrong Key
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE CONSTRAINT ON ( me:ME ) ASSERT (me.WrongOne) IS NODE KEY"));
+                session.ExecuteWrite(tx => tx.Run($"CREATE CONSTRAINT ON ( me:ME ) ASSERT (me.WrongOne) IS NODE KEY"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "ME"));
@@ -144,7 +144,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup to Wrong Key
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"DROP CONSTRAINT ON ( me:ME ) ASSERT (me.WrongOne) IS NODE KEY"));
+                session.ExecuteWrite(tx => tx.Run($"DROP CONSTRAINT ON ( me:ME ) ASSERT (me.WrongOne) IS NODE KEY"));
             }
         }
 
@@ -163,7 +163,7 @@ namespace SchematicNeo4j.Tests.NodeKey
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx =>
+                session.ExecuteWrite(tx =>
                 {
                     if (GetConstraints("NODE KEY", "ME", tx).Count() == 1)
                         try
@@ -179,7 +179,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             }
         }
 
-        private IResult GetConstraints(string ofType, string forLabel, ITransaction tx)
+        private IResult GetConstraints(string ofType, string forLabel, IQueryRunner tx)
         {
             return tx.Run(
                     "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
@@ -191,7 +191,7 @@ namespace SchematicNeo4j.Tests.NodeKey
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                return session.ReadTransaction(tx => GetConstraints(ofType, forLabel, tx).ToList());
+                return session.ExecuteRead(tx => GetConstraints(ofType, forLabel, tx).ToList());
             }
         }
 
