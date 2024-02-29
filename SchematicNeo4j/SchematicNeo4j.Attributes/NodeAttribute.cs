@@ -17,10 +17,25 @@ namespace SchematicNeo4j.Attributes
     [System.AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class NodeAttribute : Attribute
     {
+        /// <summary>
+        /// The LabelName of the node. Supports multilabel
+        /// </summary>
+        /// <remarks>
+        /// Defaults to the class name
+        /// </remarks>
+        /// <example>
+        /// Label="Vehicle:Car" or Label="Person"
+        /// </example>
         public string Label;
+
         /// <summary>
         /// The Name of the NodeKey Constraint if any, defaults to `nk`+firstLabel.
         /// </summary>
         public string NodeKey;
+
+        public override string ToString()
+        {
+            return Label;
+        }
     }
 }

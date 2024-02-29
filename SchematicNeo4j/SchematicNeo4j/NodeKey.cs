@@ -99,7 +99,7 @@ namespace SchematicNeo4j.Constraints
         }
 
         /// <summary>
-        /// Determins if the domain type Node Key is the same as the Node Key in the graph.
+        /// Determines if the domain type Node Key is the same as the Node Key in the graph.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="driver"></param>
