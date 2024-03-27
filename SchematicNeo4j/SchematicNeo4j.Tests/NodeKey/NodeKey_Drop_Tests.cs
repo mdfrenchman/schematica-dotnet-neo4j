@@ -56,6 +56,10 @@ namespace SchematicNeo4j.Tests.NodeKey
             {
                 session.ExecuteWrite(tx => tx.Run($"{personConstraint}"));
             }
+
+            // TODO: This is occassionally failing with the Create_Tests using the same constraint and tests running in parallel.
+            // Running the Drop tests separate from create is successful 100% of the time.
+
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "Person"));
             Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);

@@ -171,7 +171,8 @@ namespace SchematicNeo4j.Constraints
             if (String.IsNullOrEmpty(existing))
                 return false;
             else
-                return (existing == type.NodeKeyConstraintString());
+                // starts with returns true ignoring that NodeKeyConstraintString doesn't have the OPTIONS at the end.
+                return existing.StartsWith(type.NodeKeyConstraintString());
         }
 
         private static bool Exists(this Type type, IQueryRunner tx)
@@ -185,7 +186,7 @@ namespace SchematicNeo4j.Constraints
             {
                 var constraint = type.NodeKeyConstraintString();
                 if (!String.IsNullOrEmpty(constraint))
-                    tx.Run($"CREATE {constraint}");
+                    tx.Run($"{constraint}");
             }
         }
 
@@ -218,18 +219,21 @@ namespace SchematicNeo4j.Constraints
 
         private static string NodeKeyConstraintString(this Type type)
         {
+            // TODO: Refactor to .... return ConstraintRecord.GetNodeKeyFrom(type).createStatement;
             var nodeKeyParams = type.NodeKey();
             // Split by : to take the first label if a Node is marked as multiple (in case of inheritence).
             // Example: [Node(Label = "Vehicle:Truck")] public class Truck => NodeKey will be created for Vehicle, useful in cases of shared node keys.
             var label = type.Label().Split(':')[0];
             var nodeVariable = label.ToLower();
-            var keyString = String.Join(", ", type.NodeKey().Select(nk => $"n.{nk}"));
+            var keyString = String.Join(", ", type.NodeKey().Select(nk => $"n.`{nk}`"));
             var keyName = type.NodeKeyName();
 
             if (String.IsNullOrEmpty(keyString))
                 return String.Empty;
             else
-                return $"CONSTRAINT { keyName } FOR (n:{label}) REQUIRE ({keyString}) IS NODE KEY";
+                return $"CREATE CONSTRAINT `{ keyName }` FOR (n:`{label}`) REQUIRE ({keyString}) IS NODE KEY";
+
+            
         }
 
         // TODO: update to v4.4->v5 syntax for create etc
