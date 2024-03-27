@@ -196,7 +196,7 @@ namespace SchematicNeo4j.Constraints
 
         private static string Get(this Type type, IQueryRunner tx)
         {
-            var record = tx.Run("call db.constraints() yield description WHERE description contains (':'+$typeName+' ') AND description contains 'NODE KEY' RETURN description", new { typeName = type.Label() }).FirstOrDefault();
+            var record = tx.Run("SHOW CONSTRAINTS YIELD createStatement WHERE createStatement contains (':'+$typeName+' ') AND createStatement contains $constraintType RETURN createStatement", new { typeName = type.Label(), constraintType = "NODE KEY" }).FirstOrDefault();
             if (record is null)
                 return String.Empty;
             else if (!record[0].As<string>().Contains(") ASSERT ("))
@@ -222,11 +222,13 @@ namespace SchematicNeo4j.Constraints
             // Example: [Node(Label = "Vehicle:Truck")] public class Truck => NodeKey will be created for Vehicle, useful in cases of shared node keys.
             var label = type.Label().Split(':')[0];
             var nodeVariable = label.ToLower();
-            var keyString = String.Join(", ", type.NodeKey().Select(nk => $"{nodeVariable}.{nk}"));
+            var keyString = String.Join(", ", type.NodeKey().Select(nk => $"n.{nk}"));
+            var keyName = type.NodeKeyName();
+
             if (String.IsNullOrEmpty(keyString))
                 return String.Empty;
             else
-                return $"CONSTRAINT ON ( {nodeVariable}:{label} ) ASSERT ({keyString}) IS NODE KEY";
+                return $"CONSTRAINT { keyName } FOR (n:{label}) REQUIRE ({keyString}) IS NODE KEY";
         }
 
         // TODO: update to v4.4->v5 syntax for create etc
