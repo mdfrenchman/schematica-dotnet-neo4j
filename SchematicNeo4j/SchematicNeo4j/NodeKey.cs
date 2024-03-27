@@ -196,12 +196,13 @@ namespace SchematicNeo4j.Constraints
 
         private static string Get(this Type type, IQueryRunner tx)
         {
-            var record = tx.Run("SHOW CONSTRAINTS YIELD createStatement WHERE createStatement contains (':'+$typeName+' ') AND createStatement contains $constraintType RETURN createStatement", new { typeName = type.Label(), constraintType = "NODE KEY" }).FirstOrDefault();
+            var record = tx.Run("SHOW CONSTRAINTS YIELD createStatement WHERE createStatement contains (':`'+$typeName+'`') AND createStatement contains $constraintType RETURN createStatement", new { typeName = type.Label(), constraintType = "NODE KEY" }).FirstOrDefault();
             if (record is null)
                 return String.Empty;
-            else if (!record[0].As<string>().Contains(") ASSERT ("))
-                // Older versions of Neo4j a single parameter key would not have the () around it on return. But they're needed for CREATE/DROP.
-                return record[0].As<string>().Replace(") ASSERT ", ") ASSERT ( ").Replace(" IS NODE KEY", " ) IS NODE KEY");
+            // TODO: for this to handle v3 syntax, we need to add this back in.
+            //else if (!record[0].As<string>().Contains(") ASSERT ("))
+            //    // Older versions of Neo4j a single parameter key would not have the () around it on return. But they're needed for CREATE/DROP.
+            //    return record[0].As<string>().Replace(") ASSERT ", ") ASSERT ( ").Replace(" IS NODE KEY", " ) IS NODE KEY");
             else
                 return record[0].As<string>();
         }
