@@ -12,8 +12,10 @@ namespace SchematicNeo4j.Tests.NodeKey
     public class NodeKey_Drop_Tests : IDisposable
     {
         private IDriver driver = null;
-        
-        private string personConstraint = "CONSTRAINT ON ( person:Person ) ASSERT (person.Name) IS NODE KEY";
+
+        private string personConstraint = "CREATE CONSTRAINT `nkPerson` FOR (n:`Person`) REQUIRE (n.`Name`) IS NODE KEY OPTIONS {indexConfig: {}, indexProvider: 'range-1.0'}";
+        private ConstraintRecord personConstraintRecord = new() { name = "nkPerson" };
+
 
         public NodeKey_Drop_Tests()
         {
@@ -29,7 +31,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {personConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"{personConstraint}"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "Person"));
@@ -52,8 +54,12 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {personConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"{personConstraint}"));
             }
+
+            // TODO: This is occassionally failing with the Create_Tests using the same constraint and tests running in parallel.
+            // Running the Drop tests separate from create is successful 100% of the time.
+
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "Person"));
             Assert.Equal(personConstraint, GetConstraints("NODE KEY", "Person").First()[0]);
@@ -76,7 +82,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {personConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"{personConstraint}"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "Person"));
@@ -106,7 +112,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 if (GetConstraints("NODE KEY", "Person").Count() == 1)
-                    session.WriteTransaction(tx => tx.Run($"DROP {personConstraint}"));
+                    session.ExecuteWrite(tx => tx.Run($"DROP CONSTRAINT {personConstraintRecord.name}"));
             }
         }
 
@@ -114,13 +120,11 @@ namespace SchematicNeo4j.Tests.NodeKey
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                return session.ReadTransaction(tx => tx.Run(
-                    "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
+                return session.ExecuteRead(tx => tx.Run(
+                    "SHOW CONSTRAINTS YIELD createStatement WHERE createStatement contains (':`'+$typeLabel+'`') AND createStatement contains $constraintType RETURN createStatement",
                     new { typeLabel = forLabel, constraintType = ofType }
                     ).ToList());
             }
         }
-
-
     }
 }

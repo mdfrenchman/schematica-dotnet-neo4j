@@ -28,7 +28,7 @@ namespace SchematicNeo4j
 
             using (var session = driver.Session(sessionConfigOptions))
             {
-                return session.WriteTransaction(tx =>
+                return session.ExecuteWrite(tx =>
                 {
                     foreach (Type type in domainTypes)
                     {
@@ -52,7 +52,7 @@ namespace SchematicNeo4j
 
             using (var session = driver.Session(sessionConfigOptions))
             {
-                return session.WriteTransaction(tx => {
+                return session.ExecuteWrite(tx => {
                     type.SetNodeKey(tx);
                     type.CreateIndexes(tx);
                     return true;
@@ -79,7 +79,7 @@ namespace SchematicNeo4j
 
             using (var session = driver.Session(sessionConfigOptions))
             {
-                return session.WriteTransaction(tx => {
+                return session.ExecuteWrite(tx => {
                     foreach (Type type in domainTypes)
                     {
                         type.RemoveNodeKey(tx);
@@ -102,7 +102,7 @@ namespace SchematicNeo4j
 
             using (var session = driver.Session(sessionConfigOptions))
             {
-                return session.WriteTransaction(tx => {
+                return session.ExecuteWrite(tx => {
                     type.RemoveNodeKey(tx);
                     type.DropIndexes(tx);
                     return true;

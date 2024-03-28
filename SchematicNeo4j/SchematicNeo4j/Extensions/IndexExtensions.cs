@@ -68,7 +68,7 @@ namespace SchematicNeo4j
         /// </remarks>
         /// <param name="type"></param>
         /// <param name="tx"></param>
-        public static void CreateIndexes(this Type type, ITransaction tx)
+        public static void CreateIndexes(this Type type, IQueryRunner tx)
         {
             type.Indexes().ForEach(idx => idx.Create(tx: tx));
         }
@@ -108,7 +108,7 @@ namespace SchematicNeo4j
         /// </summary>
         /// <param name="type"></param>
         /// <param name="tx"></param>
-        public static void DropIndexes(this Type type, ITransaction tx)
+        public static void DropIndexes(this Type type, IQueryRunner tx)
         {
             type.Indexes().ForEach(idx => idx.Drop(tx: tx));
         }

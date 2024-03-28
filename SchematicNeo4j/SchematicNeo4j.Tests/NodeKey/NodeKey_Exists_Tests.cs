@@ -12,7 +12,9 @@ namespace SchematicNeo4j.Tests.NodeKey
     public class NodeKey_Exists_Tests :IDisposable
     {
         private IDriver driver = null;
-        private string teConstraint = "CONSTRAINT ON ( te:TE ) ASSERT (te.Name, te.Identity) IS NODE KEY";
+        private string teConstraint = "CREATE CONSTRAINT `nkTE` FOR (n:`TE`) REQUIRE (n.`Name`, n.`Identity`) IS NODE KEY OPTIONS {indexConfig: {}, indexProvider: 'range-1.0'}";
+        private ConstraintRecord teConstraintRecord = new() { name = "nkTE" };
+
 
         public NodeKey_Exists_Tests()
         {
@@ -33,7 +35,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {teConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"{teConstraint}"));
             }
 
             //Confirm Setup
@@ -58,7 +60,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {teConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"{teConstraint}"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "TE"));
@@ -83,7 +85,7 @@ namespace SchematicNeo4j.Tests.NodeKey
             // Setup
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {teConstraint}"));
+                session.ExecuteWrite(tx => tx.Run($"{teConstraint}"));
             }
             //Confirm Setup
             Assert.Single(GetConstraints("NODE KEY", "TE"));
@@ -113,39 +115,39 @@ namespace SchematicNeo4j.Tests.NodeKey
         {
             // Testing Get where a node key constraint for 'ThatThing' would be returned if the Label in question was 'That'
             var listConstraints = new List<string>() {
-                "CONSTRAINT ON ( tt:ThatThing ) ASSERT (tt.Name, tt.Identity) IS NODE KEY",
-                "CONSTRAINT ON ( tt:That ) ASSERT (tt.Name, tt.Identity) IS NODE KEY"
+                "CONSTRAINT nkThatThing FOR (tt:ThatThing) REQUIRE (tt.Name, tt.Identity) IS NODE KEY",
+                "CONSTRAINT nkThat FOR (tt:That) REQUIRE (tt.Name, tt.Identity) IS NODE KEY"
             };
 
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"CREATE {listConstraints[0]}"));
+                session.ExecuteWrite(tx => tx.Run($"CREATE {listConstraints[0]}"));
             }
             Assert.True(SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.ThatThing), driver));
             // Test Get via Exists.
             Assert.False(SchematicNeo4j.Constraints.NodeKey.Exists(typeof(Tests.DomainSample.That), driver));
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                session.WriteTransaction(tx => tx.Run($"DROP {listConstraints[0]}"));
+                session.ExecuteWrite(tx => tx.Run($"DROP CONSTRAINT nkThatThing"));
             }
         }
         public void Dispose()
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                    session.WriteTransaction(tx =>
+                    session.ExecuteWrite(tx =>
                     {
                         if (GetConstraints("NODE KEY", "TE", tx).Count() == 1)
-                            tx.Run($"DROP {teConstraint}");
+                            tx.Run($"DROP CONSTRAINT {teConstraintRecord.name}");
                         return true;
                     });
             }
         }
 
-        private IResult GetConstraints(string ofType, string forLabel, ITransaction tx)
+        private IResult GetConstraints(string ofType, string forLabel, IQueryRunner tx)
         {
             return tx.Run(
-                    "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
+                    "SHOW CONSTRAINTS YIELD createStatement WHERE createStatement contains (':`'+$typeLabel+'`') AND createStatement contains $constraintType RETURN createStatement",
                     new { typeLabel = forLabel, constraintType = ofType }
                     );
         }
@@ -154,7 +156,7 @@ namespace SchematicNeo4j.Tests.NodeKey
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                return session.ReadTransaction(tx => GetConstraints(ofType, forLabel, tx).ToList());
+                return session.ExecuteRead(tx => GetConstraints(ofType, forLabel, tx).ToList());
             }
         }
 

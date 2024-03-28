@@ -9,11 +9,13 @@ using SchematicNeo4j;
 
 namespace SchematicNeo4j.Tests.NodeKey
 {
-    public class NodeKey_Create_Tests :IDisposable
+    public class NodeKey_Create_Tests : IDisposable
     {
         private IDriver driver = null;
-        private string carConstraint = "CONSTRAINT ON ( car:Car ) ASSERT (car.Make, car.Model, car.ModelYear) IS NODE KEY";
-        private string personConstraint = "CONSTRAINT ON ( person:Person ) ASSERT (person.Name) IS NODE KEY";
+        private string carConstraint = "CREATE CONSTRAINT `nkCar` FOR (n:`Car`) REQUIRE (n.`Make`, n.`Model`, n.`ModelYear`) IS NODE KEY OPTIONS {indexConfig: {}, indexProvider: 'range-1.0'}";
+        private ConstraintRecord carConstraintRecord = new() { name = "nkCar" };
+        private string personConstraint = "CREATE CONSTRAINT `nkPerson` FOR (person:`Person`) REQUIRE (person.`Name`) IS NODE KEY OPTIONS {indexConfig: {}, indexProvider: 'range-1.0'}";
+        private ConstraintRecord personConstraintRecord = new() { name = "nkPerson" };
 
         public NodeKey_Create_Tests()
         {
@@ -57,7 +59,7 @@ namespace SchematicNeo4j.Tests.NodeKey
         [Fact]
         public void NodeKey_Create_Will_ThrowException_For_Type_With_No_Driver()
         {
-            
+
             // Set Driver for SchematicNeo4j to null
             SchematicNeo4j.GraphConnection.SetDriver(null);
             // Execute
@@ -86,9 +88,9 @@ namespace SchematicNeo4j.Tests.NodeKey
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 if (GetConstraints("NODE KEY", "Car").Count() == 1)
-                    session.WriteTransaction(tx => tx.Run($"DROP {carConstraint}"));
+                    session.ExecuteWrite(tx => tx.Run($"DROP CONSTRAINT {carConstraintRecord.name}"));
                 if (GetConstraints("NODE KEY", "Person").Count() == 1)
-                    session.WriteTransaction(tx => tx.Run($"DROP {personConstraint}"));
+                    session.ExecuteWrite(tx => tx.Run($"DROP CONSTRAINT {personConstraintRecord.name}"));
             }
         }
 
@@ -96,10 +98,12 @@ namespace SchematicNeo4j.Tests.NodeKey
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
-                return session.ReadTransaction(tx => tx.Run(
-                    "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
+                return session.ExecuteRead(tx =>
+                tx.Run(
+                    "SHOW CONSTRAINTS YIELD createStatement WHERE createStatement contains (':`'+$typeLabel+'`') AND createStatement contains $constraintType RETURN createStatement",
                     new { typeLabel = forLabel, constraintType = ofType }
-                    ).ToList());
+                    ).ToList()
+                );
             }
         }
 

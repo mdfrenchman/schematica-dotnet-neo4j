@@ -45,7 +45,7 @@ namespace SchematicNeo4j.Tests
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Write)))
             {
                 if (GetConstraints("NODE KEY", "Car").Count() == 1)
-                    session.WriteTransaction(tx => tx.Run($"DROP {carConstraint}"));
+                    session.ExecuteWrite(tx => tx.Run($"DROP {carConstraint}"));
             }
         }
 
@@ -53,7 +53,7 @@ namespace SchematicNeo4j.Tests
         {
             using (var session = driver.Session(o => o.WithDefaultAccessMode(AccessMode.Read)))
             {
-                return session.ReadTransaction(tx => tx.Run(
+                return session.ExecuteRead(tx => tx.Run(
                     "CALL db.constraints() yield description WHERE description contains (':'+$typeLabel+' ') AND description contains $constraintType RETURN description",
                     new { typeLabel = forLabel, constraintType = ofType }
                     ).ToList()
